@@ -1,1 +1,38 @@
-<p>navbar works!</p>
+<nav class="flex items-center justify-between bg-zinc-900 px-4 py-2.5 text-white shadow-md">
+
+  <div class="flex items-center space-x-3">
+    <img src="/icons/tmdb-logo.jpeg" alt="tmdb-logo" class="h-8 rounded object-contain">
+    <h3 class="hidden text-sm font-semibold tracking-wide text-zinc-300 sm:block ml-2">
+      Welcome to <span class="text-amber-400">TMDB</span>
+    </h3>
+  </div>
+  
+  <div class="flex cursor-pointer flex-col space-y-1.5 p-2 rounded hover:bg-zinc-800 md:hidden">
+    <div class="h-0.5 w-6 bg-white"></div>
+    <div class="h-0.5 w-6 bg-white"></div>
+    <div class="h-0.5 w-6 bg-white"></div>
+  </div>
+
+  <ul class="hidden items-center space-x-1 font-semibold md:flex">
+    <li>
+      <a href="#home" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="#profile" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+        Profile
+      </a>
+    </li>
+    <li>
+      <a href="#movies" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+        Movies
+      </a>
+    </li>
+    <li>
+      <a href="#rankings" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+        Rankings
+      </a>
+    </li>
+  </ul>
+</nav>
