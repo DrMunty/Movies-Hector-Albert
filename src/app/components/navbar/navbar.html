@@ -1,11 +1,13 @@
 <nav class="flex items-center justify-between gap-4 bg-zinc-900 px-4 py-2.5 text-white shadow-md">
 
   <div class="flex items-center space-x-3 shrink-0">
+    <a routerLink="/" class="flex items-center space-x-3 cursor-pointer"> 
     <img src="icons/tmdb-logo.jpeg" alt="tmdb-logo" class="h-8 rounded object-contain">
     <h3 class="hidden text-sm font-semibold tracking-wide text-zinc-300 lg:block">
       Welcome to your <span class="text-amber-400">movie sanctuary</span>
     </h3>
-  </div>
+    </a>
+    </div>
 
   <div class="flex cursor-pointer flex-col space-y-1.5 p-2 rounded hover:bg-zinc-800 md:hidden">
     <div class="h-0.5 w-6 bg-white"></div>
@@ -15,17 +17,24 @@
 
   <ul class="hidden items-center space-x-6 font-semibold md:flex shrink-0">
     <li>
-      <a href="#home" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+      <a routerLink="/"
+      [routerLinkActiveOptions]="{exact: true}"
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
         Home
       </a>
     </li>
     <li>
-      <a href="#movies" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+      <a routerLink="/Movies"
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
         Movies
       </a>
     </li>
     <li>
-      <a href="#rankings" class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+      <a href="/Ranking" 
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      class="rounded px-3 py-1.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
         Rankings
       </a>
     </li>
@@ -47,10 +56,10 @@
   </div>
 
   <div class="flex items-center space-x-2 shrink-0">
-    <a href="#login" class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
+    <a routerLink="/Profile" class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
       Log In
     </a>
-    <a href="#register" class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300">
+    <a routerLink="/Profile" class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300">
       Sign Up
     </a>
   </div>
