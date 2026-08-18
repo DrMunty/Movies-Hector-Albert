@@ -12,7 +12,7 @@ import { ApiService } from '../../services/api-service/api-service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class Navbar implements OnInit, OnDestroy {
   searchInput = new FormControl('');
   private destroy$ = new Subject<void>();
   
