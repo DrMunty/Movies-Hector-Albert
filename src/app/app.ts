@@ -8,6 +8,4 @@ import { Navbar } from './components/navbar/navbar';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected readonly title = signal('Movies-Hector-Albert');
-}
+export class App {}
