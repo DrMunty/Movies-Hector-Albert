@@ -29,4 +29,34 @@ searchMulti(query: string): Observable<any> {
     
     return this.http.get<any>(url, { headers: this.getHeaders() });
   }
+
+  getFilteredMovies(page: number = 1, filters: any = {}): Observable<any> {
+    
+    if (filters.query && filters.query.trim() !== '') {
+      const safeQuery = encodeURIComponent(filters.query.trim());
+      const url = `${this.baseUrl}/search/movie?query=${safeQuery}&page=${page}&include_adult=false&language=en-US`;
+      return this.http.get<any>(url, { headers: this.getHeaders() });
+    } 
+    
+    let url = `${this.baseUrl}/discover/movie?include_adult=false&language=en-US&page=${page}`;
+    
+    if (filters.sort_by) {
+      url += `&sort_by=${filters.sort_by}`;
+    }
+    
+    if (filters.with_genres) {
+      url += `&with_genres=${filters.with_genres}`;
+    }
+    
+    if (filters.vote_average_gte) {
+      url += `&vote_average.gte=${filters.vote_average_gte}`;
+    }
+
+    return this.http.get<any>(url, { headers: this.getHeaders() });
+  }
+
+  getGenres(): Observable<any> {
+    const url = `${this.baseUrl}/genre/movie/list?language=en-US`;
+    return this.http.get<any>(url, { headers: this.getHeaders() });
+  }
 }
