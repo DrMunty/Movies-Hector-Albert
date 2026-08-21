@@ -74,6 +74,7 @@ export class ApiService {
       'accept': 'application/json',
       'Authorization': `Bearer ${this.bearerToken}`
     });
+  }
 
     return this.http.get<MovieDetail>(`${this.baseUrl}/movie/${movieId}`, { headers });
   }
