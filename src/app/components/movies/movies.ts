@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ApiService } from '@services/api-service/api-service'; 
-import { Movie, Genre, MovieQueryParams } from '@models/movie-interface'; 
+import { Movie, MovieQueryParams } from '@models/movie-interface';
+import { Genre } from '@models/tmdb-interface';
 import { MovieCard } from '../movie-card/movie-card'; 
 
 @Component({

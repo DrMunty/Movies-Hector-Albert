@@ -11,6 +11,6 @@
       "@env/*": ["./src/environments/*"],
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/app/services/tvshow-service", "src/app/services/person-service"],
   "exclude": ["src/**/*.spec.ts"]
 }

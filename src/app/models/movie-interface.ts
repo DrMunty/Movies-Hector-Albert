@@ -1,28 +1,20 @@
-export interface Movie{
-    adult: boolean,
-    backdrop_path: string | null,
-    genre_ids: number[],
-    id: number,
-    original_language: string,
-    original_title: string,
-    overview: string,
-    popularity: number,
-    poster_path: string | null,
-    release_date: string,
-    softcore?: boolean,
-    title: string,
-    video: boolean,
-    vote_average: number,
-    vote_count: number
-}
+import { Genre } from '@models/tmdb-interface';
 
-export interface Genre {
+export interface Movie {
+  adult: boolean;
+  backdrop_path: string | null;
+  genre_ids: number[];
   id: number;
-  name: string;
-}
-
-export interface GenreResponse {
-  genres: Genre[];
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string | null;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
 }
 
 export interface MovieDetail extends Movie {
@@ -30,6 +22,7 @@ export interface MovieDetail extends Movie {
   genres: Genre[];
   homepage: string | null;
   imdb_id: string | null;
+  origin_country: string[];
   revenue: number;
   runtime: number | null;
   status: string;
