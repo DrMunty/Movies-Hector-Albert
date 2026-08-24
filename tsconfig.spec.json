@@ -4,7 +4,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "@feature/*": ["./src/app/feature/*"],
+      "@models/*": ["./src/app/models/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@env/*": ["./src/environments/*"],
+    }
   },
   "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
 }
