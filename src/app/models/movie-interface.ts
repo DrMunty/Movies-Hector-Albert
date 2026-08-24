@@ -36,13 +36,6 @@ export interface MovieDetail extends Movie {
   tagline: string | null;
 }
 
-export interface TmdbResponse<ItemType> {
-  page: number;
-  results: ItemType[];
-  total_pages: number;
-  total_results: number;
-}
-
 export interface MovieQueryParams {
   page?: number;
   query?: string;
