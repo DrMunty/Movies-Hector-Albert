@@ -5,11 +5,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ApiService } from '@services/api-service/api-service'; 
 import { Movie, Genre, MovieQueryParams } from '@models/movie-interface'; 
 import { MovieCard } from '../movie-card/movie-card'; 
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-movies',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MovieCard],
+  imports: [CommonModule, ReactiveFormsModule, MovieCard, RouterModule],
   templateUrl: './movies-list.html'
 })
 export class Movies implements OnInit {
