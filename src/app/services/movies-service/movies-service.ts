@@ -33,6 +33,7 @@ export class MoviesService {
       if (params.primaryReleaseYear) httpParams = httpParams.set('primary_release_year', params.primaryReleaseYear);
       if (params.voteAverageGte) httpParams = httpParams.set('vote_average.gte', params.voteAverageGte);
       if (params.withGenres) httpParams = httpParams.set('with_genres', params.withGenres);
+      if (params.voteCountGte) httpParams = httpParams.set('vote_count.gte', params.voteCountGte);
 
       return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/discover/movie`, { headers: this.headers, params: httpParams });
     }
