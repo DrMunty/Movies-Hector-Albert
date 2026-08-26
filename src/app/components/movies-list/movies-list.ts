@@ -10,7 +10,7 @@ import { MovieCard } from '../movie-card/movie-card';
   selector: 'app-movies',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MovieCard],
-  templateUrl: './movies.html'
+  templateUrl: './movies-list.html'
 })
 export class Movies implements OnInit {
   private apiService = inject(ApiService);
