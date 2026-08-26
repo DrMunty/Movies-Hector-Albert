@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '@services/api-service/api-service'; 
 
 import { Movie, Genre } from '@models/movie-interface'; 
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home-page.html',
   styleUrls: ['./home-page.css']
 })

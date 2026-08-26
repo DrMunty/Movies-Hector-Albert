@@ -37,7 +37,7 @@
                 
                 {{ featuredMovies()[currentSlideIndex()].vote_average | number:'1.1-1' }}
               </div>
-              <button class="bg-[#2f70d9] hover:bg-blue-600 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-md">
+              <button [routerLink]="['/movie', featuredMovies()[currentSlideIndex()].id]" class="bg-[#2f70d9] hover:bg-blue-600 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-md">
                 See Details
               </button>
             </div>
@@ -71,7 +71,7 @@
           <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-2">
       
             @for (movie of topRatedMovies() | slice:0:5; track movie.id; let i = $index) {
-              <div class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+              <div [routerLink]="['/movie', movie.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
                 <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
                   <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1 }}</span>
                   
@@ -96,7 +96,7 @@
           </div>
           <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-2">
             @for (movie of recentMovies() | slice:0:5; track movie.id) {
-              <div class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+              <div [routerLink]="['/movie', movie.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
                 <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
                  
                   <img [src]="getImageUrl(movie.poster_path)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
