@@ -43,4 +43,5 @@ export interface MovieQueryParams {
   primaryReleaseYear?: number;
   voteAverageGte?: number;
   withGenres?: number;
+  voteCountGte?: number;
 }
