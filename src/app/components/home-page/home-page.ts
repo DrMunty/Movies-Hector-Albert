@@ -39,15 +39,23 @@ export class HomePage implements OnInit {
   }
 
   fetchMovies(): void {
+
     this.apiService.getMovies().subscribe({
       next: (res) => this.featuredMovies.set(res.results)
     });
 
-    this.apiService.getMovies({ sortBy: 'vote_average.desc', voteAverageGte: 8 }).subscribe({
+    this.apiService.getMovies({ 
+      sortBy: 'vote_average.desc', 
+      voteAverageGte: 8,
+      voteCountGte: 3000 
+    }).subscribe({
       next: (res) => this.topRatedMovies.set(res.results)
     });
 
-    this.apiService.getMovies({ sortBy: 'primary_release_date.desc', primaryReleaseYear: 2026 }).subscribe({
+    this.apiService.getMovies({ 
+      sortBy: 'popularity.desc', 
+      primaryReleaseYear: 2026 
+    }).subscribe({
       next: (res) => this.recentMovies.set(res.results)
     });
   }
