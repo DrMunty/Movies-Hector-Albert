@@ -6,6 +6,7 @@ import { Movie} from '@models/movie-interface';
 import { RouterModule } from '@angular/router';
 import { Person } from '@models/person-interface';
 import { TvShow } from '@models/tvshow-interface';
+import { forkJoin, catchError, of} from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -23,23 +24,27 @@ export class HomePage implements OnInit {
   topRatedMovies = signal<Movie[]>([]);
   recentMovies = signal<Movie[]>([]);
   genres = signal<Genre[]>([]); 
-  popularActors = signal<Person[]>(Array(10).fill({}));
-  popularDirectors = signal<Person[]>(Array(10).fill({}));
-  topRatedTv = signal<TvShow[]>(Array(10).fill({}));
-  popularTv = signal<TvShow[]>(Array(10).fill({}));
+  popularActors = signal<Person[]>([]);
+  popularDirectors = signal<Person[]>([]);
+  topRatedTv = signal<TvShow[]>([]);
+  popularTv = signal<TvShow[]>([]);
+
 
   ngOnInit(): void {
     this.fetchGenres();
     this.fetchMovies();
     this.fetchTvShows();
-
+    this.fetchActors();
+    this.fetchDirectors();
   }
+
 
   fetchGenres(): void {
     this.apiService.getGenres().subscribe({
       next: (res) => this.genres.set(res.genres || [])
     });
   }
+
 
   fetchMovies(): void {
 
@@ -61,6 +66,8 @@ export class HomePage implements OnInit {
     }).subscribe({
       next: (res) => this.recentMovies.set(res.results)
     });
+
+
   }
 
    fetchTvShows(): void {
@@ -84,6 +91,41 @@ export class HomePage implements OnInit {
     });
    }
 
+
+  fetchActors(): void {
+  // 1. Llamamos solo al endpoint de personas populares (sin parámetros)
+  this.apiService.getPeople().subscribe({
+    next: (res) => {
+      // 2. Filtramos localmente para quedarnos solo con los que son actores/actrices
+      const actorsOnly = res.results.filter(person => person.known_for_department === 'Acting');
+      
+      // 3. Guardamos el resultado filtrado
+      this.popularActors.set(actorsOnly);
+    },
+    error: (err) => console.error('Error fetching popular actors', err)
+  });
+}
+
+fetchDirectors(): void {
+  const topDirectorIds = [525, 488, 138, 227, 5655, 7467, 2710, 578, 21684, 11130];
+
+  const directorRequests = topDirectorIds.map(id => 
+    this.apiService.getPersonDetails(id).pipe(
+      catchError(err => {
+        console.warn(`No se pudo cargar al director ${id}:`, err.message);
+        return of(null);
+      })
+    )
+  );
+
+  forkJoin(directorRequests).subscribe({
+    next: (directors) => {
+      const validDirectors = directors.filter(d => d !== null);
+      this.popularDirectors.set(validDirectors);
+    },
+    error: (err) => console.error('Error general en directores', err)
+  });
+}
 
 
   getImageUrl(path: string | null, size: string = 'w500'): string {
