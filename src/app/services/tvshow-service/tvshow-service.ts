@@ -36,6 +36,7 @@ export class TvShowService {
       if (params.firstAirDateYear) httpParams = httpParams.set('first_air_date_year', params.firstAirDateYear);
       if (params.voteAverageGte) httpParams = httpParams.set('vote_average.gte', params.voteAverageGte);
       if (params.withGenres) httpParams = httpParams.set('with_genres', params.withGenres);
+      if (params.voteCountGte) httpParams = httpParams.set('vote_count.gte', params.voteCountGte);
 
       return this.http.get<TmdbResponse<TvShow>>(`${this.baseUrl}/discover/tv`, { headers: this.headers, params: httpParams });
     }

@@ -1,9 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '@services/api-service/api-service'; 
-
-import { Movie, Genre } from '@models/movie-interface'; 
+import { ApiService} from '@services/api-service/api-service'; 
+import { Genre } from '@models/tmdb-interface';
+import { Movie} from '@models/movie-interface'; 
 import { RouterModule } from '@angular/router';
+import { Person } from '@models/person-interface';
+import { TvShow } from '@models/tvshow-interface';
 
 @Component({
   selector: 'app-home-page',
@@ -21,16 +23,16 @@ export class HomePage implements OnInit {
   topRatedMovies = signal<Movie[]>([]);
   recentMovies = signal<Movie[]>([]);
   genres = signal<Genre[]>([]); 
-
-  // MOCK DATA
-  popularActors = signal<any[]>(Array(10).fill({}));
-  popularDirectors = signal<any[]>(Array(10).fill({}));
-  topRatedTv = signal<any[]>(Array(10).fill({}));
-  popularTv = signal<any[]>(Array(10).fill({}));
+  popularActors = signal<Person[]>(Array(10).fill({}));
+  popularDirectors = signal<Person[]>(Array(10).fill({}));
+  topRatedTv = signal<TvShow[]>(Array(10).fill({}));
+  popularTv = signal<TvShow[]>(Array(10).fill({}));
 
   ngOnInit(): void {
     this.fetchGenres();
     this.fetchMovies();
+    this.fetchTvShows();
+
   }
 
   fetchGenres(): void {
@@ -60,6 +62,29 @@ export class HomePage implements OnInit {
       next: (res) => this.recentMovies.set(res.results)
     });
   }
+
+   fetchTvShows(): void {
+    this.apiService.getTvShows().subscribe({
+      next: (res) => this.topRatedTv.set(res.results)
+    });
+
+    this.apiService.getTvShows({
+      sortBy: 'vote_average.desc', 
+      voteAverageGte: 8,
+      voteCountGte: 3000
+    }).subscribe({
+      next: (res) => this.topRatedTv.set(res.results)
+    });
+
+     this.apiService.getTvShows({ 
+      sortBy: 'popularity.desc', 
+      firstAirDateYear: 2026
+    }).subscribe({
+      next: (res) => this.popularTv.set(res.results)
+    });
+   }
+
+
 
   getImageUrl(path: string | null, size: string = 'w500'): string {
     return path ? `https://image.tmdb.org/t/p/${size}${path}` : 'https://via.placeholder.com/500x750?27272a/ffffff?text=No+Image';

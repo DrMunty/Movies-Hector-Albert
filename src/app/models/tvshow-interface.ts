@@ -44,5 +44,6 @@ export interface TvShowQueryParams {
   sortBy?: 'popularity.desc' | 'vote_average.desc' | 'first_air_date.desc';
   firstAirDateYear?: number;
   voteAverageGte?: number;
+  voteCountGte?: number;
   withGenres?: number;
 }
