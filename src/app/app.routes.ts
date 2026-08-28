@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomePage } from './components/home-page/home-page';
-import { Movies } from './components/movies/movies';
+import { Movies } from './components/movies-list/movies-list';
 import { Ranking } from './components/ranking/ranking';
 import { UserProfile } from './components/user-profile/user-profile';
 
