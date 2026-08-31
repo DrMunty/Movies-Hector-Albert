@@ -10,11 +10,11 @@
     <div class="relative w-full h-[40vh] md:h-[60vh]">
       <!-- Usamos movieData en lugar de movie() -->
       <img [src]="getImageUrl(movieData.backdrop_path, 'original')" alt="Fondo" class="w-full h-full object-cover opacity-40">
-      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+      <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
     </div>
 
     <!-- 2. CONTENIDO PRINCIPAL -->
-    <div class="max-w-[1200px] mx-auto px-4 md:px-10 -mt-32 md:-mt-48 relative z-10">
+    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-32 md:-mt-48 relative z-10">
       
       <div class="flex flex-col md:flex-row gap-8 md:gap-12">
 
@@ -70,8 +70,8 @@
         
         <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-4">
           @for (actor of movieData.credits?.cast; track actor.id) {
-            <div [routerLink]="['/person', actor.id]" class="cursor-pointer snap-start shrink-0 w-[130px] bg-[#1a1a1a] rounded-lg overflow-hidden border border-zinc-800 group">
-              <div class="aspect-[2/3] overflow-hidden">
+            <div [routerLink]="['/person', actor.id]" class="cursor-pointer snap-start shrink-0 w-32.5 bg-[#1a1a1a] rounded-lg overflow-hidden border border-zinc-800 group">
+              <div class="aspect-2/3 overflow-hidden">
                 <img [src]="getImageUrl(actor.profile_path)" class="w-full h-full object-cover bg-zinc-800 group-hover:scale-105 transition-transform duration-300">
               </div>
               <div class="p-3">
