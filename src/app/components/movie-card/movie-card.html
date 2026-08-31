@@ -34,8 +34,8 @@
     
     <div class="flex items-center text-zinc-400 text-xs mt-1.5 gap-3">
       <span>{{ movie().release_date ? (movie().release_date | slice:0:4) : 'N/A' }}</span>
-      <span>2h 25m</span>
-      <span>12</span>
+      <span>•</span>
+      <span class="uppercase">{{ movie().original_language }}</span>
     </div>
 
     <div class="flex flex-wrap items-center text-xs mt-2.5 gap-x-4 gap-y-2">
