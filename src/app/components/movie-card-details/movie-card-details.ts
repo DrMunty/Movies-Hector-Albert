@@ -45,8 +45,7 @@ export class MovieCardDetails implements OnInit {
     return path ? `https://image.tmdb.org/t/p/${size}${path}` : 'https://via.placeholder.com/500x750?text=No+Image';
   }
 
-  getDirector(): string {
-    const director = this.movie()?.credits?.crew.find((member: any) => member.job === 'Director');
-    return director ? director.name : 'Desconocido';
+  getDirector(): any {
+    return this.movie()?.credits?.crew.find((member: any) => member.job === 'Director');
   }
 }

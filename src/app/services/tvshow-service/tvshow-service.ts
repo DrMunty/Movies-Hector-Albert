@@ -53,7 +53,7 @@ export class TvShowService {
     return this.getTvShows({ withGenres: genreId, page });
   }
 
-  getTvShowDetails(seriesId: number): Observable<TvShowDetail> {
-    return this.http.get<TvShowDetail>(`${this.baseUrl}/tv/${seriesId}`, { headers: this.headers });
+  getTvShowDetails(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/tv/${id}?append_to_response=credits`, { headers: this.headers });
   }
 }

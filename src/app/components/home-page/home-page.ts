@@ -92,19 +92,51 @@ export class HomePage implements OnInit {
    }
 
 
-  fetchActors(): void {
-  // 1. Llamamos solo al endpoint de personas populares (sin parámetros)
-  this.apiService.getPeople().subscribe({
-    next: (res) => {
-      // 2. Filtramos localmente para quedarnos solo con los que son actores/actrices
-      const actorsOnly = res.results.filter(person => person.known_for_department === 'Acting');
-      
-      // 3. Guardamos el resultado filtrado
-      this.popularActors.set(actorsOnly);
-    },
-    error: (err) => console.error('Error fetching popular actors', err)
-  });
-}
+fetchActors(): void {
+    // Lista negra por si aún así queremos ocultar a alguien específico por su ID
+    const blacklistedIds = [3183533]; 
+
+    forkJoin([
+      this.apiService.getPeople(undefined, 1),
+      this.apiService.getPeople(undefined, 2),
+      this.apiService.getPeople(undefined, 3),
+      this.apiService.getPeople(undefined, 4)
+    ]).subscribe({
+      next: ([page1, page2, page3, page4]) => {
+        const allPeople = [...page1.results, ...page2.results, ...page3.results, ...page4.results];
+        
+        const actorsOnly = allPeople
+          .filter(person => {
+            // 1. Filtros básicos
+            const isActor = person.known_for_department === 'Acting';
+            const hasPhoto = !!person.profile_path;
+            const isNotAdult = !person.adult;
+            const notInBlacklist = !blacklistedIds.includes(person.id);
+
+            // 2. Filtro de nombre agresivo (ignorando mayúsculas por si acaso)
+            const nameLower = person.name.toLowerCase();
+            const isNotMayuko = !nameLower.includes('mayuko');
+
+            // 3. EL FILTRO ESTRELLA 🌟: ¿Ha participado en películas reales?
+            // Comprobamos si alguna de sus películas conocidas tiene más de 100 votos
+            const hasLegitimateWork = person.known_for?.some(media => (media.vote_count || 0) > 100);
+
+            // Solo pasa si cumple TODAS las condiciones
+            return isActor && hasPhoto && isNotAdult && notInBlacklist && isNotMayuko && hasLegitimateWork;
+          })
+          .sort((a, b) => b.popularity - a.popularity)
+          .slice(0, 10);
+        
+        // 🛠️ CHIVATO PARA LA CONSOLA:
+        // Esto te imprimirá en consola (F12) los nombres e IDs de los 10 actores que ganen.
+        // Si se cuela alguien que no quieres, miras su ID aquí y lo añades a blacklistedIds arriba.
+        console.log('Top 10 Actores Finales:', actorsOnly.map(a => ({ id: a.id, name: a.name })));
+
+        this.popularActors.set(actorsOnly);
+      },
+      error: (err) => console.error('Error al cargar actores populares:', err)
+    });
+  }
 
 fetchDirectors(): void {
   const topDirectorIds = [525, 488, 138, 227, 5655, 7467, 2710, 578, 21684, 11130];

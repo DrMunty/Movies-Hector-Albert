@@ -6,21 +6,32 @@
 
   <main class="min-h-screen bg-black pb-20">
 
-    <div class="relative w-full h-[40vh] md:h-[60vh]">
-      <img [src]="getImageUrl(data.profile_path)" alt="Header Backdrop" class="w-full h-full object-cover opacity-20 filter blur-sm">
+    <!-- Hero Backdrop (Fondo de pantalla) -->
+    <div class="relative w-full h-[25vh] md:h-[40vh] bg-zinc-950 overflow-hidden">
+      @if (heroBackdrop()) {
+        <img [src]="getImageUrl(heroBackdrop(), 'original')" alt="Backdrop" class="w-full h-full object-cover opacity-30 filter blur-sm">
+      } @else {
+        <div class="w-full h-full bg-linear-to-b from-zinc-900 to-black opacity-60"></div>
+      }
       <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
     </div>
 
-    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-32 md:-mt-48 relative z-10">
+    <!-- Contenido Principal -->
+    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-20 md:-mt-32 relative z-10">
 
+      <!-- Cabecera de la Persona -->
       <div class="flex flex-col md:flex-row gap-8 md:gap-12">
 
-        <!-- Profile Photo -->
+        <!-- Foto de Perfil -->
         <div class="w-48 md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0">
-          <img [src]="getImageUrl(data.profile_path)" [alt]="data.name" class="w-full rounded-xl shadow-2xl border border-zinc-800">
+          <img 
+            [src]="getImageUrl(data.profile_path, 'w500')" 
+            [alt]="data.name" 
+            class="w-full rounded-xl shadow-2xl border border-zinc-800 aspect-2/3 object-cover bg-zinc-900"
+          >
         </div>
 
-        <!-- Person Info -->
+        <!-- Información y Biografía -->
         <div class="w-full md:w-2/3 lg:w-3/4 text-white flex flex-col justify-end pb-4">
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3">{{ data.name }}</h1>
 
@@ -48,11 +59,11 @@
           </div>
 
           <h3 class="text-xl font-bold mb-3 text-white">Biografía</h3>
-          <p class="text-zinc-300 leading-relaxed mb-6 max-w-3xl whitespace-pre-line line-clamp-6">
+          <p class="text-zinc-300 leading-relaxed mb-6 max-w-3xl whitespace-pre-line">
             {{ data.biography || 'No hay biografía disponible para este perfil.' }}
           </p>
 
-          <div class="mt-6">
+          <div>
             <button routerLink="/" class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-medium transition-colors border border-zinc-700">
               ← Volver al inicio
             </button>
@@ -60,6 +71,62 @@
         </div>
       </div>
 
+      <!-- Carrusel "Conocido por" -->
+      @if (knownForList().length > 0) {
+        <div class="mt-16">
+          <div class="flex items-center mb-6">
+            <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
+            <h2 class="text-2xl font-bold text-white">Conocido por</h2>
+          </div>
+          
+          <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-4">
+            @for (item of knownForList(); track item.id) {
+              <div 
+                [routerLink]="[item.media_type === 'tv' ? '/tv' : '/movie', item.id]" 
+                class="snap-start shrink-0 w-36 md:w-40 bg-[#1a1a1a] rounded-lg overflow-hidden border border-zinc-800 group cursor-pointer"
+              >
+                <div class="aspect-2/3 overflow-hidden relative">
+                  <!-- Usamos getMediaTitle(item) para extraer el título de forma segura -->
+                  <img 
+                    [src]="getImageUrl(item.poster_path)" 
+                    [alt]="getMediaTitle(item)"
+                    class="w-full h-full object-cover bg-zinc-800 group-hover:scale-105 transition-transform duration-300"
+                  > 
+                  <span class="absolute top-2 right-2 bg-black/80 text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/20 uppercase tracking-wider">
+                    {{ item.media_type || 'movie' }}
+                  </span>
+                </div>
+                <div class="p-3">
+                  <!-- Usamos getMediaTitle(item) aquí también -->
+                  <h4 class="text-white font-semibold text-sm line-clamp-1" [title]="getMediaTitle(item)">
+                    {{ getMediaTitle(item) }}
+                  </h4>
+                  <div class="flex items-center text-xs text-zinc-400 mt-1">
+                    <svg class="w-3 h-3 text-amber-400 mr-1 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                    {{ item.vote_average | number:'1.1-1' }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
     </div>
   </main>
+
+} @else {
+  <!-- PANTALLA DE ERROR DE EMERGENCIA -->
+  <div class="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+    <svg class="w-16 h-16 text-zinc-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h2 class="text-2xl font-bold mb-4">No se pudo cargar la información.</h2>
+    <p class="text-zinc-400 mb-6">Asegúrate de que la ruta es correcta o intenta volver al menú.</p>
+    <button routerLink="/" class="bg-amber-400 hover:bg-amber-500 text-black px-6 py-2 rounded-lg font-bold transition-colors">
+      Volver al inicio
+    </button>
+  </div>
 }

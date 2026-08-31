@@ -24,4 +24,8 @@ export interface PersonDetail extends Person {
   homepage: string | null;
   imdb_id: string;
   place_of_birth: string | null;
+  combined_credits?: {
+    cast: KnownForMedia[];
+    crew: KnownForMedia[];
+  }
 }

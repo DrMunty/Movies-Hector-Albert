@@ -7,14 +7,14 @@
   <main class="min-h-screen bg-black pb-20">
     
     <!-- 1. HERO / FONDO -->
-    <div class="relative w-full h-[40vh] md:h-[60vh]">
+    <div class="relative w-full h-[25vh] md:h-[40vh]">
       <!-- Usamos movieData en lugar de movie() -->
       <img [src]="getImageUrl(movieData.backdrop_path, 'original')" alt="Fondo" class="w-full h-full object-cover opacity-40">
       <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
     </div>
 
     <!-- 2. CONTENIDO PRINCIPAL -->
-    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-32 md:-mt-48 relative z-10">
+   <div class="max-w-300 mx-auto px-4 md:px-10 -mt-20 md:-mt-32 relative z-10">
       
       <div class="flex flex-col md:flex-row gap-8 md:gap-12">
 
@@ -50,7 +50,14 @@
 
           <div class="mb-4">
             <span class="text-zinc-500">Director: </span>
-            <span class="font-semibold text-white">{{ getDirector() }}</span>
+            @if (getDirector(); as director) {
+            <a [routerLink]="['/person', director.id]"
+              class="font-semibold text-white hover:text-amber-400 transition-colors cursor-pointer underline">
+              {{ director.name }}
+            </a>
+            } @else {
+            <span class="font-semibold text-white">Desconocido</span>
+            }
           </div>
           
           <div class="mt-6">

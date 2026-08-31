@@ -38,7 +38,7 @@ export class PersonService {
   /**
    * Fetches full biographical details for an actor/director by ID
    */
-  getPersonDetails(personId: number): Observable<PersonDetail> {
-    return this.http.get<PersonDetail>(`${this.baseUrl}/person/${personId}`, { headers: this.headers });
+ getPersonDetails(personId: number): Observable<PersonDetail> {
+    return this.http.get<PersonDetail>(`${this.baseUrl}/person/${personId}?append_to_response=combined_credits`, { headers: this.headers });
   }
 }

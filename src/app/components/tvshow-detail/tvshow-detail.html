@@ -1,1 +1,131 @@
-<p>tvshow-detail works!</p>
+@if (isLoading()) {
+<div class="min-h-screen flex items-center justify-center bg-black">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+</div>
+} @else if (tvShow(); as tvData) {
+
+<main class="min-h-screen bg-black pb-20">
+
+    <!-- Hero Backdrop con altura reducida -->
+    <div class="relative w-full h-[25vh] md:h-[40vh] bg-zinc-950 overflow-hidden">
+        @if (tvData.backdrop_path) {
+        <img [src]="getImageUrl(tvData.backdrop_path, 'original')" alt="Backdrop"
+            class="w-full h-full object-cover opacity-30 filter blur-sm">
+        } @else {
+        <div class="w-full h-full bg-linear-to-b from-zinc-900 to-black opacity-60"></div>
+        }
+        <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
+    </div>
+
+    <!-- Contenedor Principal con margen negativo ajustado -->
+    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-20 md:-mt-32 relative z-10">
+
+        <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+
+            <!-- Póster -->
+            <div class="w-48 md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0">
+                <img [src]="getImageUrl(tvData.poster_path)" [alt]="tvData.name"
+                    class="w-full rounded-xl shadow-2xl border border-zinc-800 aspect-2/3 object-cover bg-zinc-900">
+            </div>
+
+            <!-- Info & Sinopsis -->
+            <div class="w-full md:w-2/3 lg:w-3/4 text-white flex flex-col justify-end pb-4">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3">{{ tvData.name }}</h1>
+
+                <div class="flex flex-wrap items-center gap-4 text-zinc-400 text-sm md:text-base mb-8">
+                    <div class="flex items-center gap-1 text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                        {{ tvData.vote_average | number:'1.1-1' }}
+                    </div>
+                    <span>{{ tvData.first_air_date | slice:0:4 }}</span>
+                    <span>•</span>
+                    <span>{{ tvData.number_of_seasons }} Temporada(s)</span>
+                    <span>•</span>
+                    <div class="flex flex-wrap gap-2">
+                        @for (genre of tvData.genres; track genre.id) {
+                        <span
+                            class="bg-zinc-800 border border-zinc-700 px-3 py-0.5 rounded-full text-xs text-zinc-300">{{
+                            genre.name }}</span>
+                        }
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-3 text-white">Sinopsis</h3>
+                <!-- Sinopsis completa sin line-clamp -->
+                <p class="text-zinc-300 leading-relaxed mb-6 max-w-3xl whitespace-pre-line">
+                    {{ tvData.overview || 'No hay sinopsis disponible para esta serie.' }}
+                </p>
+                <div class="mb-6">
+                    <span class="text-zinc-500">Creador(es): </span>
+                    @if (tvData.created_by && tvData.created_by.length > 0) {
+                    <span class="font-semibold text-white">
+                        @for (creator of tvData.created_by; track creator.id; let last = $last) {
+                        <a [routerLink]="['/person', creator.id]"
+                            class="hover:text-amber-400 transition-colors cursor-pointer underline">
+                            {{ creator.name }}
+                        </a>{{ !last ? ', ' : '' }}
+                        }
+                    </span>
+                    } @else {
+                    <span class="font-semibold text-white">Desconocido</span>
+                    }
+                </div>
+
+                <div>
+                    <button routerLink="/"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-medium transition-colors border border-zinc-700">
+                        ← Volver al inicio
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reparto Principal -->
+        @if (tvData.credits?.cast?.length > 0) {
+        <div class="mt-16">
+            <div class="flex items-center mb-6">
+                <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-white">Reparto Principal</h2>
+            </div>
+
+            <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-4">
+                @for (actor of tvData.credits.cast; track actor.id) {
+                <div [routerLink]="['/person', actor.id]"
+                    class="cursor-pointer snap-start shrink-0 w-36 md:w-40 bg-[#1a1a1a] rounded-lg overflow-hidden border border-zinc-800 group">
+                    <div class="aspect-2/3 overflow-hidden relative">
+                        <img [src]="getImageUrl(actor.profile_path)" [alt]="actor.name"
+                            class="w-full h-full object-cover bg-zinc-800 group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-3">
+                        <h4 class="text-white font-semibold text-sm line-clamp-1" [title]="actor.name">{{ actor.name }}
+                        </h4>
+                        <p class="text-zinc-500 text-xs line-clamp-1 mt-1" [title]="actor.character">{{ actor.character
+                            }}</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+</main>
+
+} @else {
+<!-- PANTALLA DE ERROR -->
+<div class="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+    <svg class="w-16 h-16 text-zinc-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h2 class="text-2xl font-bold mb-4">No se pudo cargar la serie.</h2>
+    <p class="text-zinc-400 mb-6">Asegúrate de que la ruta es correcta o intenta volver al menú.</p>
+    <button routerLink="/"
+        class="bg-amber-400 hover:bg-amber-500 text-black px-6 py-2 rounded-lg font-bold transition-colors">
+        Volver al inicio
+    </button>
+</div>
+}
