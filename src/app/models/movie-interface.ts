@@ -27,6 +27,10 @@ export interface MovieDetail extends Movie {
   runtime: number | null;
   status: string;
   tagline: string | null;
+  credits?: {
+    cast: any[];
+    crew: any[];
+  };
 }
 
 export interface MovieQueryParams {
