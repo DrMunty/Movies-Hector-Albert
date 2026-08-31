@@ -50,6 +50,6 @@ export class MoviesService {
   }
 
   getMovieDetails(movieId: number): Observable<MovieDetail> {
-    return this.http.get<MovieDetail>(`${this.baseUrl}/movie/${movieId}`, { headers: this.headers });
+   return this.http.get<MovieDetail>(`${this.baseUrl}/movie/${movieId}?append_to_response=credits`, { headers: this.headers });
   }
 }
