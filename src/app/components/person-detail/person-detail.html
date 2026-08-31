@@ -1,0 +1,65 @@
+@if (isLoading()) {
+  <div class="min-h-screen flex items-center justify-center bg-black">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+  </div>
+} @else if (person(); as data) {
+
+  <main class="min-h-screen bg-black pb-20">
+
+    <div class="relative w-full h-[40vh] md:h-[60vh]">
+      <img [src]="getImageUrl(data.profile_path)" alt="Header Backdrop" class="w-full h-full object-cover opacity-20 filter blur-sm">
+      <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
+    </div>
+
+    <div class="max-w-300 mx-auto px-4 md:px-10 -mt-32 md:-mt-48 relative z-10">
+
+      <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+
+        <!-- Profile Photo -->
+        <div class="w-48 md:w-1/3 lg:w-1/4 shrink-0 mx-auto md:mx-0">
+          <img [src]="getImageUrl(data.profile_path)" [alt]="data.name" class="w-full rounded-xl shadow-2xl border border-zinc-800">
+        </div>
+
+        <!-- Person Info -->
+        <div class="w-full md:w-2/3 lg:w-3/4 text-white flex flex-col justify-end pb-4">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3">{{ data.name }}</h1>
+
+          <div class="flex flex-wrap items-center gap-4 text-zinc-400 text-sm md:text-base mb-8">
+            <div class="flex items-center gap-1 text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              {{ data.popularity | number:'1.1-1' }} Pop.
+            </div>
+
+            @if (data.known_for_department) {
+              <span class="bg-zinc-800 border border-zinc-700 px-3 py-0.5 rounded-full text-xs text-zinc-300">
+                {{ data.known_for_department }}
+              </span>
+            }
+
+            @if (data.birthday) {
+              <span>•</span>
+              <span>{{ data.birthday }}</span>
+            }
+
+            @if (data.place_of_birth) {
+              <span>•</span>
+              <span>{{ data.place_of_birth }}</span>
+            }
+          </div>
+
+          <h3 class="text-xl font-bold mb-3 text-white">Biografía</h3>
+          <p class="text-zinc-300 leading-relaxed mb-6 max-w-3xl whitespace-pre-line line-clamp-6">
+            {{ data.biography || 'No hay biografía disponible para este perfil.' }}
+          </p>
+
+          <div class="mt-6">
+            <button routerLink="/" class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-medium transition-colors border border-zinc-700">
+              ← Volver al inicio
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+}

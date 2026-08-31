@@ -2,6 +2,7 @@
 
   <div class="max-w-350 mx-auto px-4 md:px-10">
 
+    <!-- HERO SLIDER SECTION (MOVIES) -->
     <section class="w-full mb-16">
       @if (featuredMovies().length > 0) {
       <div
@@ -76,27 +77,24 @@
 
     <div class="space-y-14">
 
+      <!-- MOVIE SECTIONS -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-16">
 
+        <!-- Top Rated Movies -->
         <section>
           <div class="flex items-center mb-4">
             <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
             <h2 class="text-xl font-bold text-white">Top Rated Movies</h2>
           </div>
           <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-2">
-
             @for (movie of topRatedMovies() | slice:0:5; track movie.id; let i = $index) {
             <div [routerLink]="['/movie', movie.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
               <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-                <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i +
-                  1 }}</span>
-
+                <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1 }}</span>
                 <img [src]="getImageUrl(movie.poster_path)"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               </div>
-
               <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="movie.title">{{ movie.title }}</h3>
-
               <div class="flex items-center text-xs text-zinc-400 mt-1">
                 <svg class="w-3 h-3 text-amber-400 mr-1 fill-current" viewBox="0 0 24 24">
                   <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -108,6 +106,7 @@
           </div>
         </section>
 
+        <!-- Most Recent Movies -->
         <section>
           <div class="flex items-center mb-4">
             <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
@@ -117,13 +116,10 @@
             @for (movie of recentMovies() | slice:0:5; track movie.id) {
             <div [routerLink]="['/movie', movie.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
               <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-
                 <img [src]="getImageUrl(movie.poster_path)"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               </div>
-
               <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="movie.title">{{ movie.title }}</h3>
-
               <div class="flex items-center text-xs text-zinc-400 mt-1">{{ movie.release_date | slice:0:4 }}</div>
             </div>
             }
@@ -131,24 +127,22 @@
         </section>
       </div>
 
+      <!-- PERSON SECTIONS -->
+      <!-- Popular Actors -->
       <section>
         <div class="flex items-center mb-4">
           <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
           <h2 class="text-xl font-bold text-white">Popular Actors</h2>
         </div>
         <div class="flex overflow-x-auto snap-x hide-scrollbar gap-6 pb-4">
-          @for (actor of popularActors() | slice:0:10; track actor.id ; let i = $index) {
-          <div [routerLink]="['/movie', actor.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+          @for (actor of popularActors() | slice:0:10; track actor.id; let i = $index) {
+          <div [routerLink]="['/person', actor.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
             <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1
-                }}</span>
-
+              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1 }}</span>
               <img [src]="getImageUrl(actor.profile_path)"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             </div>
-
             <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="actor.name">{{ actor.name }}</h3>
-
             <div class="flex items-center text-xs text-zinc-400 mt-1">
               <svg class="w-3 h-3 text-amber-400 mr-1 fill-current" viewBox="0 0 24 24">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -160,24 +154,21 @@
         </div>
       </section>
 
+      <!-- Popular Directors -->
       <section>
         <div class="flex items-center mb-4">
           <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
           <h2 class="text-xl font-bold text-white">Popular Directors</h2>
         </div>
         <div class="flex overflow-x-auto snap-x hide-scrollbar gap-6 pb-4">
-          @for (director of popularDirectors(); track director.id; let i= $index) {
-          <div [routerLink]="['/movie', director.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+          @for (director of popularDirectors(); track director.id; let i = $index) {
+          <div [routerLink]="['/person', director.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
             <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1
-                }}</span>
-
+              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1 }}</span>
               <img [src]="getImageUrl(director.profile_path)"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             </div>
-
             <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="director.name">{{ director.name }}</h3>
-
             <div class="flex items-center text-xs text-zinc-400 mt-1">
               <svg class="w-3 h-3 text-amber-400 mr-1 fill-current" viewBox="0 0 24 24">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -189,24 +180,22 @@
         </div>
       </section>
 
+      <!-- TV SHOW SECTIONS -->
+      <!-- Top Rated TV Series -->
       <section>
         <div class="flex items-center mb-4">
           <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
           <h2 class="text-xl font-bold text-white">Top Rated TV Series</h2>
         </div>
         <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-2">
-          @for (tv of topRatedTv() | slice:0:10 ; track tv.id ; let i = $index) {
-          <div [routerLink]="['/movie', tv.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+          @for (tv of topRatedTv() | slice:0:10; track tv.id; let i = $index) {
+          <div [routerLink]="['/tv', tv.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
             <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1
-                }}</span>
-
+              <span class="absolute top-0 left-0 bg-black/70 text-white font-bold px-2 py-1 rounded-br-lg z-10">{{ i + 1 }}</span>
               <img [src]="getImageUrl(tv.poster_path)"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             </div>
-
             <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="tv.name">{{ tv.name }}</h3>
-
             <div class="flex items-center text-xs text-zinc-400 mt-1">
               <svg class="w-3 h-3 text-amber-400 mr-1 fill-current" viewBox="0 0 24 24">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -218,23 +207,20 @@
         </div>
       </section>
 
+      <!-- Popular TV Series -->
       <section>
         <div class="flex items-center mb-4">
           <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
           <h2 class="text-xl font-bold text-white">Popular TV Series</h2>
         </div>
         <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-2">
-
-          @for (tv of popularTv() | slice:0:10 ; track $index) {
-          <div [routerLink]="['/movie', tv.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
+          @for (tv of popularTv() | slice:0:10; track tv.id) {
+          <div [routerLink]="['/tv', tv.id]" class="snap-start shrink-0 w-35 md:w-40 group cursor-pointer">
             <div class="relative w-full aspect-2/3 rounded-lg overflow-hidden mb-2">
-
               <img [src]="getImageUrl(tv.poster_path)"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             </div>
-
             <h3 class="text-white font-semibold text-sm line-clamp-1" [title]="tv.name">{{ tv.name }}</h3>
-
             <div class="flex items-center text-xs text-zinc-400 mt-1">{{ tv.first_air_date | slice:0:4 }}</div>
           </div>
           }
