@@ -43,4 +43,9 @@ export class Navbar implements OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  closeSearch(): void {
+    this.searchInput.setValue('');
+    this.searchResults.set([]);
+  }
 }
