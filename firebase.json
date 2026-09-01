@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "movies-it",
+        "supportEmail": "support@undefined.firebaseapp.com"
+      }
+    }
+  }
+}
