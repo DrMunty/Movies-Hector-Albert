@@ -5,7 +5,7 @@
   "compilerOptions": {
     "types": [],
     "paths": {
-      "@feature/*": ["./src/app/feature/*"],
+      "@components/*": ["./src/app/components/*"],
       "@models/*": ["./src/app/models/*"],
       "@services/*": ["./src/app/services/*"],
       "@env/*": ["./src/environments/*"],

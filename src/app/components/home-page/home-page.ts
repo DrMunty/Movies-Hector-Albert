@@ -126,11 +126,6 @@ fetchActors(): void {
           })
           .sort((a, b) => b.popularity - a.popularity)
           .slice(0, 10);
-        
-        // 🛠️ CHIVATO PARA LA CONSOLA:
-        // Esto te imprimirá en consola (F12) los nombres e IDs de los 10 actores que ganen.
-        // Si se cuela alguien que no quieres, miras su ID aquí y lo añades a blacklistedIds arriba.
-        console.log('Top 10 Actores Finales:', actorsOnly.map(a => ({ id: a.id, name: a.name })));
 
         this.popularActors.set(actorsOnly);
       },

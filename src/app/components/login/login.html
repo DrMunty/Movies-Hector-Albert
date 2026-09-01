@@ -1,0 +1,93 @@
+<main class="min-h-[85vh] flex items-center justify-center bg-black px-4 py-12">
+  <div class="w-full max-w-md bg-[#1a1a1a] p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+    
+    <!-- Encabezado con estilo de la app -->
+    <div class="text-center mb-8">
+      <div class="inline-block bg-[#f5c518] text-black font-black text-xl px-3 py-1 rounded-md mb-3">
+        HAMD
+      </div>
+      <h2 class="text-2xl font-bold text-white">
+        {{ isRegisterMode() ? 'Crea tu cuenta' : 'Bienvenido de nuevo' }}
+      </h2>
+      <p class="text-sm text-zinc-400 mt-1">
+        {{ isRegisterMode() ? 'Únete a tu santuario del cine' : 'Inicia sesión para continuar' }}
+      </p>
+    </div>
+
+    <!-- Mensaje de Error -->
+    @if (errorMessage()) {
+      <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2.5 rounded-lg text-sm mb-6 flex items-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <!-- Formulario -->
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      
+      <div>
+        <label class="block text-xs font-semibold text-zinc-400 mb-1">Correo electrónico</label>
+        <input 
+          type="email" 
+          formControlName="email" 
+          placeholder="tu@email.com" 
+          class="w-full rounded-lg bg-zinc-900 border border-zinc-700 py-2.5 px-3.5 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
+        />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-zinc-400 mb-1">Contraseña</label>
+        <input 
+          type="password" 
+          formControlName="password" 
+          placeholder="••••••••" 
+          class="w-full rounded-lg bg-zinc-900 border border-zinc-700 py-2.5 px-3.5 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
+        />
+      </div>
+
+      <button 
+        type="submit" 
+        [disabled]="authForm.invalid || isLoading()"
+        class="w-full mt-2 bg-amber-400 hover:bg-amber-500 text-black font-bold py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+      >
+        @if (isLoading()) {
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+        } @else {
+          {{ isRegisterMode() ? 'Registrarse' : 'Iniciar Sesión' }}
+        }
+      </button>
+    </form>
+
+    <!-- Separador -->
+    <div class="relative my-6">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-zinc-800"></div></div>
+      <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#1a1a1a] px-2 text-zinc-500">O continúa con</span></div>
+    </div>
+
+    <!-- Botón de Google -->
+    <button 
+      (click)="loginGoogle()" 
+      type="button"
+      class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24">
+        <path fill="#EA4335" d="M12 5c1.54 0 2.94.55 4.04 1.46l3.03-3.03C17.24 1.7 14.81 1 12 1 7.51 1 3.7 3.55 1.87 7.25l3.65 2.83C6.39 7.15 8.94 5 12 5z"/>
+        <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.7 2.87c2.16-2 3.72-4.94 3.72-8.69z"/>
+        <path fill="#FBBC05" d="M5.52 14.08c-.23-.68-.36-1.41-.36-2.08 0-.67.13-1.4.36-2.08L1.87 7.09C1.13 8.57.71 10.23.71 12s.42 3.43 1.16 4.91l3.65-2.83z"/>
+        <path fill="#34A853" d="M12 23c3.24 0 5.95-1.08 7.93-2.91l-3.7-2.87c-1.08.72-2.45 1.16-4.23 1.16-3.06 0-5.61-2.15-6.48-5.08L1.87 16.13C3.7 19.82 7.51 23 12 23z"/>
+      </svg>
+      Google
+    </button>
+
+    <!-- Cambio entre Login y Registro -->
+    <p class="text-center text-xs text-zinc-400 mt-6">
+      {{ isRegisterMode() ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta?' }}
+      <button (click)="toggleMode()" class="text-amber-400 font-semibold hover:underline ml-1">
+        {{ isRegisterMode() ? 'Inicia sesión' : 'Regístrate gratis' }}
+      </button>
+    </p>
+
+  </div>
+</main>
