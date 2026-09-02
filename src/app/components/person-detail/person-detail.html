@@ -58,14 +58,14 @@
             }
           </div>
 
-          <h3 class="text-xl font-bold mb-3 text-white">Biografía</h3>
+          <h3 class="text-xl font-bold mb-3 text-white">Biography</h3>
           <p class="text-zinc-300 leading-relaxed mb-6 max-w-3xl whitespace-pre-line">
             {{ data.biography || 'No hay biografía disponible para este perfil.' }}
           </p>
 
-          <div>
-            <button routerLink="/" class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-medium transition-colors border border-zinc-700">
-              ← Volver al inicio
+          <div class="mt-6">
+            <button routerLink="/" class="bg-zinc-800 hover:bg-amber-400 hover:text-black hover:border-amber-400 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 border border-zinc-700 cursor-pointer">
+              ← Return to Home Page
             </button>
           </div>
         </div>
@@ -76,7 +76,7 @@
         <div class="mt-16">
           <div class="flex items-center mb-6">
             <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
-            <h2 class="text-2xl font-bold text-white">Conocido por</h2>
+            <h2 class="text-2xl font-bold text-white">Known for</h2>
           </div>
           
           <div class="flex overflow-x-auto snap-x hide-scrollbar gap-4 pb-4">
@@ -123,10 +123,10 @@
     <svg class="w-16 h-16 text-zinc-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
     </svg>
-    <h2 class="text-2xl font-bold mb-4">No se pudo cargar la información.</h2>
-    <p class="text-zinc-400 mb-6">Asegúrate de que la ruta es correcta o intenta volver al menú.</p>
+    <h2 class="text-2xl font-bold mb-4">Info could not be loaded</h2>
+    <p class="text-zinc-400 mb-6">Make sure that the route exist or try going back to the home page.</p>
     <button routerLink="/" class="bg-amber-400 hover:bg-amber-500 text-black px-6 py-2 rounded-lg font-bold transition-colors">
-      Volver al inicio
+      Return to home page
     </button>
   </div>
 }
