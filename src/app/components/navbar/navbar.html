@@ -116,11 +116,13 @@
         }
       </div>
     } @else {
-      <!-- ESTADO 1: USUARIO NO REGISTRADO -->
-      <a routerLink="/login" class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white cursor-pointer">
+     <!-- ESTADO 1: USUARIO NO REGISTRADO -->
+      <a routerLink="/login" 
+         class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white cursor-pointer">
         Log In
       </a>
-      <a routerLink="/login" class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300 cursor-pointer">
+      <a [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"
+         class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300 cursor-pointer">
         Sign Up
       </a>
     }
