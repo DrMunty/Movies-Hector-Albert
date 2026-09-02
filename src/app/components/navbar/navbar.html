@@ -82,13 +82,48 @@
   </div>
 
   <div class="flex items-center space-x-2 shrink-0">
-    <a routerLink="/login"
-      class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white">
-      Log In
-    </a>
-    <a routerLink="/login"
-      class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300">
-      Sign Up
-    </a>
+    
+    @if (currentUser(); as user) {
+      <!-- ESTADO 2: USUARIO LOGUEADO -->
+      <div class="relative">
+        <button (click)="toggleProfileMenu()" class="flex items-center focus:outline-none cursor-pointer">
+          <img 
+            [src]="user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.email" 
+            alt="Profile Avatar"
+            class="w-8 h-8 rounded-full border-2 border-transparent hover:border-amber-400 transition-colors object-cover bg-zinc-800"
+          >
+        </button>
+
+        <!-- Menú Desplegable -->
+        @if (isProfileMenuOpen()) {
+          <div class="absolute right-0 mt-3 w-56 bg-zinc-800 rounded-md shadow-xl z-50 border border-zinc-700 py-1 overflow-hidden">
+            
+            <div class="px-4 py-3 border-b border-zinc-700 bg-zinc-900/50">
+              <p class="text-sm text-white font-medium truncate">{{ user.displayName || 'Cinéfilo' }}</p>
+              <p class="text-xs text-zinc-400 truncate mt-0.5">{{ user.email }}</p>
+            </div>
+            
+            <a routerLink="/Profile" (click)="toggleProfileMenu()" class="block px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer">
+              My Profile
+            </a>
+            
+            <div class="border-t border-zinc-700 my-1"></div>
+            
+            <button (click)="logout()" class="w-full text-left block px-4 py-2 text-sm text-red-400 hover:bg-zinc-700 hover:text-red-300 transition-colors cursor-pointer font-medium">
+              Log out
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- ESTADO 1: USUARIO NO REGISTRADO -->
+      <a routerLink="/login" class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white cursor-pointer">
+        Log In
+      </a>
+      <a routerLink="/login" class="rounded-md bg-amber-400 px-3 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-amber-300 cursor-pointer">
+        Sign Up
+      </a>
+    }
+
   </div>
 </nav>

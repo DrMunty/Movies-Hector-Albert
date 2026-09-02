@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil, switchMap, of } from 'rxjs';
 import { ApiService } from '@services/api-service/api-service';
+import { AuthService } from '@services/auth/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -12,13 +13,15 @@ import { ApiService } from '@services/api-service/api-service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class Navbar implements OnDestroy {
+export class Navbar implements OnInit, OnDestroy {
   searchInput = new FormControl('');
   private destroy$ = new Subject<void>();
   
   private apiService = inject(ApiService);
-
+  authService = inject(AuthService)
+  currentUser = this.authService.currentUser;
   searchResults = signal<any[]>([]);
+  isProfileMenuOpen = signal<boolean>(false);
 
   ngOnInit(): void {
     this.searchInput.valueChanges
@@ -47,5 +50,14 @@ export class Navbar implements OnDestroy {
   closeSearch(): void {
     this.searchInput.setValue('');
     this.searchResults.set([]);
+  }
+
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen.update(val => !val);
+  }
+
+  async logout(): Promise<void> {
+    this.isProfileMenuOpen.set(false);
+    await this.authService.logout();
   }
 }
