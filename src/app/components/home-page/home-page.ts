@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService} from '@services/api-service/api-service'; 
 import { Genre } from '@models/tmdb-interface';
@@ -15,10 +15,11 @@ import { forkJoin, catchError, of} from 'rxjs';
   templateUrl: './home-page.html',
   styleUrls: ['./home-page.css']
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
 
   currentSlideIndex = signal<number>(0);
+  private autoSlideInterval: any = null;
 
   featuredMovies = signal<Movie[]>([]);
   topRatedMovies = signal<Movie[]>([]);
@@ -36,6 +37,40 @@ export class HomePage implements OnInit {
     this.fetchTvShows();
     this.fetchActors();
     this.fetchDirectors();
+    this.startAutoSlide();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoSlide();
+  }
+
+  startAutoSlide(): void {
+    this.stopAutoSlide();
+    this.autoSlideInterval = setInterval(() => {
+      this.nextSlide(false);
+    }, 5000);
+  }
+
+  stopAutoSlide(): void {
+    if (this.autoSlideInterval) {
+      clearInterval(this.autoSlideInterval);
+      this.autoSlideInterval = null;
+    }
+  }
+
+  nextSlide(manual: boolean = true): void {
+    if (this.featuredMovies().length === 0) return;
+    this.currentSlideIndex.update(i => (i + 1) % this.featuredMovies().length);
+    
+    if (manual) {
+      this.startAutoSlide();
+    }
+  }
+
+  prevSlide(): void {
+    if (this.featuredMovies().length === 0) return;
+    this.currentSlideIndex.update(i => (i - 1 + this.featuredMovies().length) % this.featuredMovies().length);
+    this.startAutoSlide();
   }
 
 
@@ -168,13 +203,4 @@ fetchDirectors(): void {
       .join(', ');
   }
 
-  nextSlide(): void {
-    if (this.featuredMovies().length === 0) return;
-    this.currentSlideIndex.update(i => (i + 1) % this.featuredMovies().length);
-  }
-
-  prevSlide(): void {
-    if (this.featuredMovies().length === 0) return;
-    this.currentSlideIndex.update(i => (i - 1 + this.featuredMovies().length) % this.featuredMovies().length);
-  }
 }

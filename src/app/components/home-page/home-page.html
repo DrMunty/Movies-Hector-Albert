@@ -5,58 +5,66 @@
     <!-- HERO SLIDER SECTION (MOVIES) -->
     <section class="w-full mb-16">
       @if (featuredMovies().length > 0) {
-      <div
-        class="relative w-full bg-[#1a1a1a] rounded-2xl overflow-hidden flex flex-col md:flex-row border border-zinc-800 shadow-xl min-h-90">
+      <div class="relative w-full bg-[#1a1a1a] rounded-2xl overflow-hidden border border-zinc-800 shadow-xl min-h-[60vh] md:min-h-125">
 
-        <div class="w-full md:w-2/5 lg:w-1/2 relative">
-          <img [src]="getImageUrl(featuredMovies()[currentSlideIndex()].backdrop_path, 'original')"
-            [alt]="featuredMovies()[currentSlideIndex()].title"
-            class="w-full h-70 md:absolute md:inset-0 md:h-full object-cover transition-opacity duration-500">
-          <div
-            class="absolute inset-0 bg-linear-to-t from-[#1a1a1a] to-transparent md:bg-linear-to-r md:from-transparent md:to-[#1a1a1a]">
-          </div>
-        </div>
-
-        <div class="w-full md:w-3/5 lg:w-1/2 p-6 md:p-10 flex flex-col justify-center relative z-10">
-          <div class="flex items-center gap-2 mb-3">
-            <span
-              class="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Trending</span>
-
-            <span class="text-zinc-400 text-xs md:text-sm">
-              {{ featuredMovies()[currentSlideIndex()].release_date | slice:0:4 }} •
-              {{ getGenreNames(featuredMovies()[currentSlideIndex()].genre_ids) }}
-            </span>
+        <!-- Bucle de Diapositivas Apiladas -->
+        @for (movie of featuredMovies(); track movie.id; let i = $index) {
+        <div 
+          class="absolute inset-0 flex flex-col md:flex-row transition-opacity duration-1000 ease-in-out"
+          [class.opacity-100]="i === currentSlideIndex()"
+          [class.opacity-0]="i !== currentSlideIndex()"
+          [class.pointer-events-auto]="i === currentSlideIndex()"
+          [class.pointer-events-none]="i !== currentSlideIndex()"
+        >
+          <!-- Imagen de la Diapositiva -->
+          <div class="w-full md:w-2/5 lg:w-1/2 relative h-75 md:h-full">
+            <img [src]="getImageUrl(movie.backdrop_path, 'original')"
+              [alt]="movie.title"
+              class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-linear-to-t from-[#1a1a1a] to-transparent md:bg-linear-to-r md:from-transparent md:to-[#1a1a1a]"></div>
           </div>
 
-          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-            {{ featuredMovies()[currentSlideIndex()].title }}
-          </h2>
-
-          <p class="text-zinc-300 text-sm md:text-base line-clamp-3 md:line-clamp-4 mb-8 md:pr-6">
-            {{ featuredMovies()[currentSlideIndex()].overview }}
-          </p>
-
-          <div class="flex items-center gap-4 mt-auto pt-2">
-            <div class="flex items-center text-white font-bold text-base md:text-lg">
-              <svg class="w-5 h-5 md:w-6 md:h-6 text-amber-400 mr-1.5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-              </svg>
-
-              {{ featuredMovies()[currentSlideIndex()].vote_average | number:'1.1-1' }}
+          <!-- Información de la Diapositiva -->
+          <div class="w-full md:w-3/5 lg:w-1/2 p-6 md:p-10 flex flex-col justify-center relative z-10 h-full">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Trending</span>
+              <span class="text-zinc-400 text-xs md:text-sm">
+                {{ movie.release_date | slice:0:4 }} •
+                {{ getGenreNames(movie.genre_ids) }}
+              </span>
             </div>
-            <button [routerLink]="['/movie', featuredMovies()[currentSlideIndex()].id]"
-              class="bg-[#2f70d9] hover:bg-blue-600 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-md">
-              See Details
-            </button>
+
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              {{ movie.title }}
+            </h2>
+
+            <p class="text-zinc-300 text-sm md:text-base line-clamp-3 md:line-clamp-4 mb-8 md:pr-6">
+              {{ movie.overview }}
+            </p>
+
+            <div class="flex items-center gap-4 mt-auto pt-2">
+              <div class="flex items-center text-white font-bold text-base md:text-lg">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-amber-400 mr-1.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+                {{ movie.vote_average | number:'1.1-1' }}
+              </div>
+              <button [routerLink]="['/movie', movie.id]" class="bg-[#2f70d9] hover:bg-blue-600 text-white px-5 py-2.5 rounded font-semibold text-sm transition-colors shadow-md">
+                See Details
+              </button>
+            </div>
           </div>
         </div>
+        }
 
+        <!-- Controles fijos por encima de las diapositivas (z-20) -->
         <button (click)="prevSlide()"
           class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 p-2.5 rounded-full text-white backdrop-blur-sm transition-all border border-zinc-700 z-20">
           <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
           </svg>
         </button>
+        
         <button (click)="nextSlide()"
           class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 p-2.5 rounded-full text-white backdrop-blur-sm transition-all border border-zinc-700 z-20">
           <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,8 +72,8 @@
           </svg>
         </button>
 
-        <div
-          class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20 overflow-x-auto max-w-[80%] hide-scrollbar">
+        <!-- Indicadores de puntos -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20 overflow-x-auto max-w-[80%] hide-scrollbar">
           @for (slide of featuredMovies(); track slide.id; let i = $index) {
           <div class="w-2.5 h-2.5 shrink-0 rounded-full transition-colors"
             [ngClass]="{'bg-amber-400': currentSlideIndex() === i, 'bg-zinc-600': currentSlideIndex() !== i}"></div>
