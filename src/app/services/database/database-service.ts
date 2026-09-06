@@ -12,22 +12,27 @@ export class DbService {
   private auth = inject(AuthService);
   private injector = inject(Injector); 
 
-  async saveMovie(movie: any, listType: 'favorites' | 'watchlist', rating: number = 0): Promise<void> {
+  async saveMovie(movie: any, action: 'favorites' | 'watchlist' | 'rated', rating: number = 0): Promise<void> {
     const user = this.auth.currentUser();
     if (!user) return;
 
     const movieRef = doc(this.firestore, `users/${user.uid}/movies/${movie.id}`);
     
-    const userMovie: UserMovie = {
+    const updateData: any = {
       id: movie.id,
       title: movie.title,
       poster_path: movie.poster_path,
-      listType: listType,
-      userRating: rating,
       addedAt: new Date().getTime()
     };
 
-    await setDoc(movieRef, userMovie, { merge: true });
+    if (action === 'favorites') updateData.isFavorite = true;
+    if (action === 'watchlist') updateData.inWatchlist = true;
+    if (action === 'rated') {
+      updateData.isRated = true;
+      updateData.userRating = rating;
+    }
+
+    await setDoc(movieRef, updateData, { merge: true });
   }
 
   getUserMovies(): Observable<UserMovie[]> {

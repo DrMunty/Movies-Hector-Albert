@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { ApiService } from '@services/api-service/api-service'; 
 import { Movie, MovieQueryParams } from '@models/movie-interface';
 import { Genre } from '@models/tmdb-interface';
@@ -9,6 +9,7 @@ import { MovieCard } from '../movie-card/movie-card';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '@services/auth/auth';
 import { DbService } from '@services/database/database-service';
+import type { UserMovie } from '@models/usermovie-interface';
 
 @Component({
   selector: 'app-movies',
@@ -16,7 +17,7 @@ import { DbService } from '@services/database/database-service';
   imports: [CommonModule, ReactiveFormsModule, MovieCard, RouterModule],
   templateUrl: './movies-list.html'
 })
-export class Movies implements OnInit {
+export class Movies implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -29,10 +30,20 @@ export class Movies implements OnInit {
   isLoading = signal<boolean>(true);
   genres = signal<Genre[]>([]);
 
+  // Películas guardadas por el usuario
+  savedMovies = signal<UserMovie[]>([]);
+  private userMoviesSub?: Subscription;
+
+  // Estados del Modal de Estrellas
   isRatingModalOpen = signal<boolean>(false);
-  selectedRating = signal<number>(10);
+  selectedRating = signal<number>(0);
+  hoverRating = signal<number>(0);
   movieToRate = signal<Movie | null>(null);
   ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  // Estados del Toast (Notificación)
+  showSuccessMessage = signal<boolean>(false);
+  successMessageText = signal<string>('');
 
   filterForm: FormGroup = this.fb.group({
     query: [''],
@@ -45,9 +56,15 @@ export class Movies implements OnInit {
     this.fetchGenres();
     this.fetchMovies();
 
+    // Cargamos las películas guardadas del usuario para rellenar los iconos
+    if (this.authService.currentUser()) {
+      this.userMoviesSub = this.dbService.getUserMovies().subscribe(movies => {
+        this.savedMovies.set(movies);
+      });
+    }
+
     this.filterForm.get('query')?.valueChanges.subscribe(text => {
       const controlsToToggle = ['sort_by', 'with_genres', 'vote_average_gte'];
-      
       controlsToToggle.forEach(controlName => {
         const control = this.filterForm.get(controlName);
         if (text && text.trim() !== '') {
@@ -67,20 +84,45 @@ export class Movies implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.userMoviesSub?.unsubscribe();
+  }
+
+  // Funciones para comprobar si la película está en las listas
+  isMovieFavorite(id: number): boolean {
+    return !!this.savedMovies().find(m => m.id === id && m.isFavorite);
+  }
+
+  isMovieWatchlisted(id: number): boolean {
+    return !!this.savedMovies().find(m => m.id === id && m.inWatchlist);
+  }
+
+  // NUEVO: Comprobar si está votada
+  isMovieRated(id: number): boolean {
+    return !!this.savedMovies().find(m => m.id === id && m.isRated);
+  }
+
+  // NUEVO: Método para actualizar la UI instantáneamente (Actualización optimista)
+  updateLocalState(movieId: number, field: 'isFavorite' | 'inWatchlist' | 'isRated') {
+    const currentMovies = this.savedMovies();
+    const existing = currentMovies.find(m => m.id === movieId);
+    if (existing) {
+      existing[field] = true;
+      this.savedMovies.set([...currentMovies]);
+    } else {
+      this.savedMovies.set([...currentMovies, { id: movieId, [field]: true } as any]);
+    }
+  }
+
   fetchGenres(): void {
     this.apiService.getGenres().subscribe({
-      next: (response) => {
-        this.genres.set(response.genres);
-      },
-      error: (err) => {
-        console.error('Could not load genres:', err);
-      }
+      next: (response) => this.genres.set(response.genres),
+      error: (err) => console.error('Could not load genres:', err)
     });
   }
 
   fetchMovies(): void {
     this.isLoading.set(true);
-    
     const currentFilters = this.filterForm.getRawValue();
 
     const queryParams: MovieQueryParams = {
@@ -120,21 +162,38 @@ export class Movies implements OnInit {
     }
   }
 
+  // --- LÓGICA DE ACCIONES Y NOTIFICACIONES ---
+
   async addToWatchlist(movie: Movie) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
+    
+    // Feedback visual inmediato
+    this.updateLocalState(movie.id, 'inWatchlist');
+    
+    this.successMessageText.set(`Added to your Watchlist!`);
+    this.showSuccessMessage.set(true);
+    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    
     await this.dbService.saveMovie(movie, 'watchlist');
-    alert(`${movie.title} added to your Watchlist!`);
   }
 
   async addToFavorites(movie: Movie) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
+    
+    // Feedback visual inmediato
+    this.updateLocalState(movie.id, 'isFavorite');
+    
+    this.successMessageText.set(`Added to Favorites!`);
+    this.showSuccessMessage.set(true);
+    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    
     await this.dbService.saveMovie(movie, 'favorites');
-    alert(`${movie.title} added to Favorites!`);
   }
 
   openRatingModal(movie: Movie) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
     this.movieToRate.set(movie);
+    this.hoverRating.set(0);
     this.isRatingModalOpen.set(true);
   }
 
@@ -144,14 +203,23 @@ export class Movies implements OnInit {
   }
 
   async setRating(rate: number) {
-    this.selectedRating.set(rate); 
     const movieData = this.movieToRate();
+    if (!movieData) return;
 
-    if (movieData) {
-      await this.dbService.saveMovie(movieData, 'rated' as any, rate);
-      alert(`Awesome! You rated ${movieData.title} with a ${rate}/10.`);
-    }
-    
+    this.selectedRating.set(rate); 
     this.closeRatingModal();
+
+    // Feedback visual inmediato
+    this.updateLocalState(movieData.id, 'isRated');
+
+    this.successMessageText.set(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
+    this.showSuccessMessage.set(true);
+    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+
+    try {
+      await this.dbService.saveMovie(movieData, 'rated', rate);
+    } catch (error) {
+      console.error('Error saving rating:', error);
+    }
   }
 }

@@ -10,6 +10,9 @@ import { MovieDetail, type Movie } from '@models/movie-interface';
 })
 export class MovieCard {
   movie = input.required<Movie>();
+  isFavorite = input<boolean>(false);
+  isWatchlisted = input<boolean>(false);
+  isRated = input<boolean>(false);
   favoriteMovie = output<void>();
   rateMovie = output<void>();
   watchLaterMovie = output<void>();

@@ -1,14 +1,13 @@
 <main class="min-h-screen w-full bg-black relative">
-  
   <section class="max-w-7xl mx-auto px-4 py-8 relative z-10">
-    
+
     <div class="mb-8 bg-[#1a1a1a] p-5 rounded-xl border border-zinc-800 shadow-md">
       <h1 class="text-2xl font-bold text-white mb-6 border-l-4 border-amber-400 pl-3">
         Search your favorite movies
       </h1>
 
       <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
+        <!-- (Tu formulario se mantiene idéntico) -->
         <div class="flex flex-col">
           <label class="text-xs font-semibold text-zinc-400 mb-1">Search by title </label>
           <input type="text" formControlName="query" placeholder="Ex: Inception..."
@@ -17,7 +16,7 @@
 
         <div class="flex flex-col">
           <label class="text-xs font-semibold text-zinc-400 mb-1">Sort by</label>
-          <select formControlName="sort_by" 
+          <select formControlName="sort_by"
             class="rounded-md bg-zinc-900 border border-zinc-700 py-2 px-3 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">
             <option value="popularity.desc">Most popular </option>
             <option value="vote_average.desc">Highest rating</option>
@@ -31,7 +30,7 @@
             class="rounded-md bg-zinc-900 border border-zinc-700 py-2 px-3 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">
             <option value="">All genres</option>
             @for (genre of genres(); track genre.id) {
-              <option [value]="genre.id">{{ genre.name }}</option>
+            <option [value]="genre.id">{{ genre.name }}</option>
             }
           </select>
         </div>
@@ -46,87 +45,124 @@
             <option value="4">Regular (+4.0)</option>
           </select>
         </div>
-
       </form>
     </div>
 
     @if (isLoading()) {
-      <div class="flex justify-center items-center py-32">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
-      </div>
+    <div class="flex justify-center items-center py-32">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+    </div>
     } @else {
-      
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-10">
-        @for (movieItem of moviesList(); track movieItem.id) {
-          <app-movie-card 
-            [movie]="movieItem" 
-            (favoriteMovie)="addToFavorites(movieItem)"
-            (rateMovie)="openRatingModal(movieItem)"
-            (watchLaterMovie)="addToWatchlist(movieItem)"
-            [routerLink]="['/movie', movieItem.id]" 
-            class="cursor-pointer block hover:scale-[1.02] transition-transform duration-300"> 
-          </app-movie-card>
 
-        } @empty {
-          <div class="col-span-full py-20 text-center bg-zinc-900 rounded-xl border border-zinc-800">
-            <p class="text-xl font-bold text-zinc-300">Movie could not be found.</p>
-            <p class="text-zinc-500 mt-2">Try using different search filters.</p>
-          </div>
-        }
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-10">
+      @for (movieItem of moviesList(); track movieItem.id) {
+
+      <!-- AQUÍ ESTÁ LA MAGIA: Pasamos los booleanos isFavorite y isWatchlisted a la tarjeta -->
+      <app-movie-card [movie]="movieItem" [isFavorite]="isMovieFavorite(movieItem.id)"
+        [isWatchlisted]="isMovieWatchlisted(movieItem.id)" [isRated]="isMovieRated(movieItem.id)"
+        (favoriteMovie)="addToFavorites(movieItem)" (rateMovie)="openRatingModal(movieItem)"
+        (watchLaterMovie)="addToWatchlist(movieItem)" [routerLink]="['/movie', movieItem.id]"
+        class="cursor-pointer block hover:scale-[1.02] transition-transform duration-300">
+      </app-movie-card>
+
+      } @empty {
+      <div class="col-span-full py-20 text-center bg-zinc-900 rounded-xl border border-zinc-800">
+        <p class="text-xl font-bold text-zinc-300">Movie could not be found.</p>
+        <p class="text-zinc-500 mt-2">Try using different search filters.</p>
       </div>
+      }
+    </div>
     }
 
     @if (!isLoading() && moviesList().length > 0) {
-      <div class="flex justify-center items-center space-x-6 border-t border-zinc-800 pt-6">
-        <button (click)="prevPage()" [disabled]="currentPage() === 1"
-          class="px-4 py-2 bg-zinc-800 text-white rounded-md font-medium hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-          ← Previous
-        </button>
-        
-        <span class="text-zinc-400 font-medium text-sm">
-          Page <span class="text-white">{{ currentPage() }}</span> de {{ totalPages() }}
-        </span>
-
-        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-          class="px-4 py-2 bg-zinc-800 text-white rounded-md font-medium hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-          Next →
-        </button>
-      </div>
+    <div class="flex justify-center items-center space-x-6 border-t border-zinc-800 pt-6">
+      <button (click)="prevPage()" [disabled]="currentPage() === 1"
+        class="px-4 py-2 bg-zinc-800 text-white rounded-md font-medium hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        ← Previous
+      </button>
+      <span class="text-zinc-400 font-medium text-sm">
+        Page <span class="text-white">{{ currentPage() }}</span> de {{ totalPages() }}
+      </span>
+      <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+        class="px-4 py-2 bg-zinc-800 text-white rounded-md font-medium hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+        Next →
+      </button>
+    </div>
     }
 
   </section>
 </main>
 
+<!-- ============================================== -->
+<!-- MODAL DE ESTRELLAS INTERACTIVAS                -->
+<!-- ============================================== -->
 @if (isRatingModalOpen()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" (click)="closeRatingModal()"></div>
-    
-    <div class="bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative z-10">
-      <button (click)="closeRatingModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-      </button>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" (click)="closeRatingModal()"></div>
+  <div class="bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative z-10">
 
-      <div class="text-center mb-6">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-400/10 mb-4">
-          <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        </div>
-        <h3 class="text-2xl font-bold text-white mb-1">Rate this Movie</h3>
-        <p class="text-zinc-400 text-sm">Select a score for <span class="text-amber-400 font-semibold">{{ movieToRate()?.title }}</span></p>
-      </div>
+    <svg width="0" height="0" class="absolute hidden">
+      <defs>
+        <linearGradient id="halfStarGrad">
+          <stop offset="50%" stop-color="#fbbf24" />
+          <stop offset="50%" stop-color="#3f3f46" />
+        </linearGradient>
+      </defs>
+    </svg>
 
-      <div class="flex flex-wrap gap-2 justify-center mb-8">
-        @for (rate of ratingOptions; track rate) {
-          <button (click)="setRating(rate)" class="w-10 h-10 rounded-full font-bold text-sm transition-all duration-200 cursor-pointer bg-zinc-800 text-zinc-400 hover:bg-amber-400 hover:text-black hover:scale-110 hover:shadow-[0_0_15px_rgba(251,191,36,0.3)]">
-            {{ rate }}
-          </button>
-        }
-      </div>
+    <button (click)="closeRatingModal()"
+      class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
 
-      <div class="w-full">
-        <button (click)="closeRatingModal()" class="w-full px-4 py-3 rounded-md font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer">
-          Cancel
-        </button>
+    <div class="text-center mb-8">
+      <h3 class="text-2xl font-bold text-white mb-2">Rate this Movie</h3>
+      <p class="text-zinc-400 text-sm">How many stars for <span class="text-amber-400 font-semibold">{{
+          movieToRate()?.title }}</span>?</p>
+      <div class="mt-4 text-4xl font-black text-amber-400">
+        {{ hoverRating() > 0 ? hoverRating() : (selectedRating() || 0) }}<span class="text-xl text-zinc-500">/10</span>
       </div>
     </div>
+
+    <div class="flex justify-center gap-1 sm:gap-2 mb-8" (mouseleave)="hoverRating.set(0)">
+      @for (rate of ratingOptions; track rate) {
+      <div class="relative w-7 h-7 sm:w-10 sm:h-10 cursor-pointer transform transition-transform hover:scale-110">
+        <div class="absolute inset-y-0 left-0 w-1/2 z-10" (mouseenter)="hoverRating.set(rate - 0.5)"
+          (click)="setRating(rate - 0.5)"></div>
+        <div class="absolute inset-y-0 right-0 w-1/2 z-10" (mouseenter)="hoverRating.set(rate)"
+          (click)="setRating(rate)"></div>
+        <svg class="w-full h-full drop-shadow-md transition-colors duration-150"
+          [attr.fill]="(hoverRating() > 0 ? hoverRating() : selectedRating()) >= rate ? '#fbbf24' : ((hoverRating() > 0 ? hoverRating() : selectedRating()) === rate - 0.5 ? 'url(#halfStarGrad)' : '#3f3f46')"
+          viewBox="0 0 24 24">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      </div>
+      }
+    </div>
+
+    <div class="w-full">
+      <button (click)="closeRatingModal()"
+        class="w-full px-4 py-3 rounded-md font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer">
+        Cancel
+      </button>
+    </div>
   </div>
+</div>
+}
+
+<!-- ============================================== -->
+<!-- NOTIFICACIÓN DE ÉXITO CENTRAL (TOAST)          -->
+<!-- ============================================== -->
+@if (showSuccessMessage()) {
+<div class="fixed inset-0 z-9999 flex items-center justify-center p-4 pointer-events-none">
+  <div class="bg-amber-400 text-black px-8 py-4 rounded-full font-bold text-lg shadow-2xl flex items-center gap-3">
+    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+    </svg>
+    <span>{{ successMessageText() }}</span>
+  </div>
+</div>
 }
