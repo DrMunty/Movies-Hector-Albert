@@ -84,7 +84,6 @@
   <div class="flex items-center space-x-2 shrink-0">
     
     @if (currentUser(); as user) {
-      <!-- ESTADO 2: USUARIO LOGUEADO -->
       <div class="relative">
         <button (click)="toggleProfileMenu()" class="flex items-center focus:outline-none cursor-pointer">
           <img 
@@ -94,7 +93,6 @@
           >
         </button>
 
-        <!-- Menú Desplegable -->
         @if (isProfileMenuOpen()) {
           <div class="absolute right-0 mt-3 w-56 bg-zinc-800 rounded-md shadow-xl z-50 border border-zinc-700 py-1 overflow-hidden">
             
@@ -106,6 +104,10 @@
             <a routerLink="/Profile" (click)="toggleProfileMenu()" class="block px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer">
               My Profile
             </a>
+          
+            <a routerLink="/user-movies" (click)="toggleProfileMenu()" class="block px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer">
+              My Movies
+            </a>
             
             <div class="border-t border-zinc-700 my-1"></div>
             
@@ -116,7 +118,6 @@
         }
       </div>
     } @else {
-     <!-- ESTADO 1: USUARIO NO REGISTRADO -->
       <a routerLink="/login" 
          class="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white cursor-pointer">
         Log In

@@ -1,1 +1,117 @@
-<p>favorite-movies works!</p>
+<main class="min-h-screen bg-black pt-8 pb-20 px-4 md:px-10">
+    <div class="max-w-7xl mx-auto">
+
+        @if (currentUser(); as user) {
+        <div class="flex items-center gap-6 mb-12 bg-[#1a1a1a] p-6 rounded-2xl border border-zinc-800">
+
+            <img [src]="user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.email" alt="Avatar"
+                class="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-amber-400 bg-zinc-800 object-cover">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-1">{{ user.displayName || 'Cinéfilo' }}'s Sanctuary</h1>
+                <p class="text-zinc-400 text-sm">{{ user.email }}</p>
+                <div class="flex gap-4 mt-3 text-sm font-semibold">
+                    <span class="text-amber-400">{{ favoriteMovies().length }} Favoritas</span>
+                    <span class="text-zinc-300">{{ watchlistMovies().length }} Pendientes</span>
+                </div>
+            </div>
+        </div>
+        }
+
+        <section class="mb-16">
+            <div class="flex items-center mb-6">
+                <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-white">My Top Ranked Favorites</h2>
+            </div>
+
+            @if (favoriteMovies().length > 0) {
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                @for (movie of favoriteMovies(); track movie.id; let i = $index) {
+                <div class="relative group">
+                    <div [routerLink]="['/movie', movie.id]"
+                        class="relative aspect-2/3 rounded-lg overflow-hidden cursor-pointer border border-zinc-800 group-hover:border-amber-400 transition-colors">
+
+                        <div
+                            class="absolute top-2 right-2 bg-black/80 backdrop-blur-sm text-amber-400 font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 text-sm border border-amber-400/30">
+                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                            {{ movie.userRating }}/10
+                        </div>
+
+                        <div
+                            class="absolute top-0 left-0 bg-amber-400 text-black font-black px-3 py-1 rounded-br-lg z-10 text-sm">
+                            #{{ i + 1 }}
+                        </div>
+
+                        <img [src]="getImageUrl(movie.poster_path)"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                        <div
+                            class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button (click)="$event.stopPropagation(); removeMovie(movie.id)"
+                                class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+                                title="Remove from favorites">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <h3 class="text-white font-semibold text-sm mt-2 line-clamp-1">{{ movie.title }}</h3>
+                </div>
+                }
+            </div>
+            } @else {
+            <div class="text-center py-12 bg-[#1a1a1a] rounded-lg border border-zinc-800 border-dashed">
+                <p class="text-zinc-500 mb-4">You haven't ranked any favorites yet.</p>
+                <a routerLink="/Movies" class="text-amber-400 hover:text-amber-300 font-medium cursor-pointer">Explore
+                    movies →</a>
+            </div>
+            }
+        </section>
+
+        <section>
+            <div class="flex items-center mb-6">
+                <div class="w-1 h-6 bg-blue-500 mr-3 rounded"></div>
+                <h2 class="text-2xl font-bold text-white">My Watchlist</h2>
+            </div>
+
+            @if (watchlistMovies().length > 0) {
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                @for (movie of watchlistMovies(); track movie.id) {
+                <div class="relative group">
+                    <div [routerLink]="['/movie', movie.id]"
+                        class="relative aspect-2/3 rounded-lg overflow-hidden cursor-pointer border border-zinc-800 group-hover:border-blue-500 transition-colors">
+
+                        <img [src]="getImageUrl(movie.poster_path)"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                        <div
+                            class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button (click)="$event.stopPropagation(); removeMovie(movie.id)"
+                                class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+                                title="Remove from watchlist">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <h3 class="text-white font-semibold text-sm mt-2 line-clamp-1">{{ movie.title }}</h3>
+                </div>
+                }
+            </div>
+            } @else {
+            <div class="text-center py-12 bg-[#1a1a1a] rounded-lg border border-zinc-800 border-dashed">
+                <p class="text-zinc-500 mb-4">Your watchlist is empty.</p>
+                <a routerLink="/Movies" class="text-blue-400 hover:text-blue-300 font-medium cursor-pointer">Find movies
+                    to watch →</a>
+            </div>
+            }
+        </section>
+
+    </div>
+</main>

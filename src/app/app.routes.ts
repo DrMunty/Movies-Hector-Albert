@@ -7,6 +7,7 @@ import { MovieCardDetails } from '@components/movie-card-details/movie-card-deta
 import { PersonDetails } from '@components/person-detail/person-detail';
 import { TvShowDetails } from '@components/tvshow-detail/tvshow-detail';
 import { Login } from '@components/login/login';
+import { FavoriteMovies } from '@components/favorite-movies/favorite-movies';
 
 export const routes: Routes = [
     { path: '', component: HomePage},
@@ -15,7 +16,6 @@ export const routes: Routes = [
     { path: 'person/:id', component: PersonDetails},
     { path: 'tv/:id', component: TvShowDetails},
     { path: 'login', component: Login},
-    // { path: 'Ranking', component: Ranking},
-    // { path: 'Profile', component: UserProfile},
+    { path: 'user-movies', component: FavoriteMovies},
     { path: '**', redirectTo: '', pathMatch: 'prefix'}
 ];
