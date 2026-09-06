@@ -6,7 +6,9 @@ import { ApiService } from '@services/api-service/api-service';
 import { Movie, MovieQueryParams } from '@models/movie-interface';
 import { Genre } from '@models/tmdb-interface';
 import { MovieCard } from '../movie-card/movie-card'; 
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '@services/auth/auth';
+import { DbService } from '@services/database/database-service';
 
 @Component({
   selector: 'app-movies',
@@ -17,12 +19,20 @@ import { RouterModule } from '@angular/router';
 export class Movies implements OnInit {
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
+  authService = inject(AuthService);
+  private dbService = inject(DbService);
 
   moviesList = signal<Movie[]>([]);
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
   isLoading = signal<boolean>(true);
   genres = signal<Genre[]>([]);
+
+  isRatingModalOpen = signal<boolean>(false);
+  selectedRating = signal<number>(10);
+  movieToRate = signal<Movie | null>(null);
+  ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   filterForm: FormGroup = this.fb.group({
     query: [''],
@@ -35,7 +45,6 @@ export class Movies implements OnInit {
     this.fetchGenres();
     this.fetchMovies();
 
-    // Toggle filter availability based on active search query
     this.filterForm.get('query')?.valueChanges.subscribe(text => {
       const controlsToToggle = ['sort_by', 'with_genres', 'vote_average_gte'];
       
@@ -49,7 +58,6 @@ export class Movies implements OnInit {
       });
     });
 
-    // Reactively trigger search/filter updates on form changes
     this.filterForm.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
@@ -73,7 +81,6 @@ export class Movies implements OnInit {
   fetchMovies(): void {
     this.isLoading.set(true);
     
-    // getRawValue() retrieves values even when controls are disabled
     const currentFilters = this.filterForm.getRawValue();
 
     const queryParams: MovieQueryParams = {
@@ -84,7 +91,6 @@ export class Movies implements OnInit {
       voteAverageGte: currentFilters.vote_average_gte ? Number(currentFilters.vote_average_gte) : undefined
     };
 
-    // Pass queryParams directly without the { params: ... } wrapper
     this.apiService.getMovies(queryParams).subscribe({
       next: (response) => {
         this.moviesList.set(response.results);
@@ -112,5 +118,44 @@ export class Movies implements OnInit {
       this.fetchMovies();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  async addToWatchlist(movie: Movie) {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    await this.dbService.saveMovie(movie, 'watchlist');
+    alert(`${movie.title} added to your Watchlist!`);
+  }
+
+  openRatingModal(movie: Movie) {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.movieToRate.set(movie);
+    this.selectedRating.set(10); 
+    this.isRatingModalOpen.set(true);
+  }
+
+  closeRatingModal() {
+    this.isRatingModalOpen.set(false);
+    setTimeout(() => this.movieToRate.set(null), 300);
+  }
+
+  setRating(rate: number) {
+    this.selectedRating.set(rate);
+  }
+
+  async confirmAddToFavorites() {
+    const movieData = this.movieToRate();
+    const rating = this.selectedRating();
+
+    if (movieData) {
+      await this.dbService.saveMovie(movieData, 'favorites', rating);
+      alert(`${movieData.title} added to Favorites with ${rating}/10!`);
+    }
+    this.closeRatingModal();
   }
 }

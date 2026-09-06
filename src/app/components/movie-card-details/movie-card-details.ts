@@ -1,8 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router} from '@angular/router';
 import { ApiService } from '@services/api-service/api-service'; 
 import { MovieDetail } from '@models/movie-interface';
+import { AuthService } from '@services/auth/auth';
+import { DbService } from '@services/database/database-service';
 
 @Component({
   selector: 'app-movie-card-details',
@@ -12,10 +14,18 @@ import { MovieDetail } from '@models/movie-interface';
 })
 export class MovieCardDetails implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router)
   private apiService = inject(ApiService);
+  authService = inject(AuthService);
+  private dbService = inject(DbService);
 
   movie = signal<MovieDetail | null>(null);
   isLoading = signal<boolean>(true);
+
+  isRatingModalOpen = signal<boolean>(false);
+  selectedRating = signal<number>(10);
+  movieToRate = signal<MovieDetail | null>(null);
+  ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -35,7 +45,7 @@ export class MovieCardDetails implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar los detalles de la película:', err);
+        console.error('An error ocurred while loading movie details', err);
         this.isLoading.set(false);
       }
     });
@@ -47,5 +57,45 @@ export class MovieCardDetails implements OnInit {
 
   getDirector(): any {
     return this.movie()?.credits?.crew.find((member: any) => member.job === 'Director');
+  }
+
+  async addToWatchlist(movie: MovieDetail) {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    await this.dbService.saveMovie(movie, 'watchlist');
+    alert(`${movie.title} added to your Watchlist!`);
+  }
+
+  openRatingModal(movie: MovieDetail) {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.movieToRate.set(movie);
+    this.selectedRating.set(10); 
+    this.isRatingModalOpen.set(true);
+  }
+
+  closeRatingModal() {
+    this.isRatingModalOpen.set(false);
+    setTimeout(() => this.movieToRate.set(null), 300);
+  }
+
+  setRating(rate: number) {
+    this.selectedRating.set(rate);
+  }
+
+  async confirmAddToFavorites() {
+    const movieData = this.movieToRate();
+    const rating = this.selectedRating();
+
+    if (movieData) {
+      await this.dbService.saveMovie(movieData, 'favorites', rating);
+      alert(`${movieData.title} added to Favorites with ${rating}/10!`);
+    }
+    
+    this.closeRatingModal();
   }
 }
