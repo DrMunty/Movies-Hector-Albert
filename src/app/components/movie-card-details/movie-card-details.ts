@@ -83,19 +83,15 @@ export class MovieCardDetails implements OnInit {
     setTimeout(() => this.movieToRate.set(null), 300);
   }
 
-  setRating(rate: number) {
+  async setRating(rate: number) {
     this.selectedRating.set(rate);
-  }
-
-  async confirmAddToFavorites() {
     const movieData = this.movieToRate();
-    const rating = this.selectedRating();
 
     if (movieData) {
-      await this.dbService.saveMovie(movieData, 'favorites', rating);
-      alert(`${movieData.title} added to Favorites with ${rating}/10!`);
+      await this.dbService.saveMovie(movieData, 'rated' as any, rate);
+      alert(`Awesome! You rated ${movieData.title} with a ${rate}/10.`);
     }
-    
+  
     this.closeRatingModal();
   }
 }

@@ -121,21 +121,20 @@ export class Movies implements OnInit {
   }
 
   async addToWatchlist(movie: Movie) {
-    if (!this.authService.currentUser()) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
     await this.dbService.saveMovie(movie, 'watchlist');
     alert(`${movie.title} added to your Watchlist!`);
   }
 
+  async addToFavorites(movie: Movie) {
+    if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
+    await this.dbService.saveMovie(movie, 'favorites');
+    alert(`${movie.title} added to Favorites!`);
+  }
+
   openRatingModal(movie: Movie) {
-    if (!this.authService.currentUser()) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
     this.movieToRate.set(movie);
-    this.selectedRating.set(10); 
     this.isRatingModalOpen.set(true);
   }
 
@@ -144,18 +143,15 @@ export class Movies implements OnInit {
     setTimeout(() => this.movieToRate.set(null), 300);
   }
 
-  setRating(rate: number) {
-    this.selectedRating.set(rate);
-  }
-
-  async confirmAddToFavorites() {
+  async setRating(rate: number) {
+    this.selectedRating.set(rate); 
     const movieData = this.movieToRate();
-    const rating = this.selectedRating();
 
     if (movieData) {
-      await this.dbService.saveMovie(movieData, 'favorites', rating);
-      alert(`${movieData.title} added to Favorites with ${rating}/10!`);
+      await this.dbService.saveMovie(movieData, 'rated' as any, rate);
+      alert(`Awesome! You rated ${movieData.title} with a ${rate}/10.`);
     }
+    
     this.closeRatingModal();
   }
 }

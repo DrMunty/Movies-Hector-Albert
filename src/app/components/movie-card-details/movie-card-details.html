@@ -107,9 +107,11 @@
 
 @if (isRatingModalOpen()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" (click)="closeRatingModal()"></div>
     
     <div class="bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl relative z-10">
+      
       <button (click)="closeRatingModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
@@ -124,16 +126,16 @@
 
       <div class="flex flex-wrap gap-2 justify-center mb-8">
         @for (rate of ratingOptions; track rate) {
-          <button (click)="setRating(rate)" class="w-10 h-10 rounded-full font-bold text-sm transition-all duration-200 cursor-pointer"
-            [ngClass]="selectedRating() === rate ? 'bg-amber-400 text-black scale-110 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'">
+          <button (click)="setRating(rate)" class="w-10 h-10 rounded-full font-bold text-sm transition-all duration-200 cursor-pointer bg-zinc-800 text-zinc-400 hover:bg-amber-400 hover:text-black hover:scale-110 hover:shadow-[0_0_15px_rgba(251,191,36,0.3)]">
             {{ rate }}
           </button>
         }
       </div>
 
-      <div class="flex gap-3">
-        <button (click)="closeRatingModal()" class="flex-1 px-4 py-3 rounded-md font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer">Cancel</button>
-        <button (click)="confirmAddToFavorites()" class="flex-1 px-4 py-3 rounded-md font-bold text-black bg-amber-400 hover:bg-amber-300 transition-colors shadow-lg cursor-pointer">Save Favorite</button>
+      <div class="w-full">
+        <button (click)="closeRatingModal()" class="w-full px-4 py-3 rounded-md font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
