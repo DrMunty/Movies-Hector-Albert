@@ -7,7 +7,7 @@ import { RouterLink, ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html'
 })
 export class Login implements OnInit {
