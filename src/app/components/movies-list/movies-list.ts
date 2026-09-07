@@ -209,7 +209,6 @@ export class Movies implements OnInit, OnDestroy {
     this.selectedRating.set(rate); 
     this.closeRatingModal();
 
-    // Feedback visual inmediato
     this.updateLocalState(movieData.id, 'isRated');
 
     this.successMessageText.set(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
