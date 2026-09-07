@@ -1,5 +1,5 @@
 import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
-import { Firestore, collection, doc, setDoc, deleteDoc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, setDoc, deleteDoc, onSnapshot, collectionGroup, getDocs } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth';
 import { Observable, switchMap, of } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -71,5 +71,40 @@ export class DbService {
 
     const movieRef = doc(this.firestore, `users/${user.uid}/movies/${movieId}`);
     await deleteDoc(movieRef);
+  }
+
+  async getGlobalRankings() {
+    const moviesRef = collectionGroup(this.firestore, 'movies');
+    const snapshot = await getDocs(moviesRef);
+
+    const stats = new Map<number, any>();
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      
+      if (!stats.has(data['id'])) {
+        stats.set(data['id'], {
+          id: data['id'],
+          title: data['title'],
+          favoriteCount: 0,
+          ratingSum: 0,
+          ratingCount: 0
+        });
+      }
+
+      const movieStat = stats.get(data['id']);
+      if (data['isFavorite']) movieStat.favoriteCount++;
+      if (data['isRated'] && data['userRating']) {
+        movieStat.ratingSum += data['userRating'];
+        movieStat.ratingCount++;
+      }
+    });
+
+    return Array.from(stats.values())
+      .map(movie => ({
+        ...movie,
+        averageRating: movie.ratingCount > 0 ? (movie.ratingSum / movie.ratingCount) : 0
+      }))
+      .filter(movie => movie.favoriteCount > 0 || movie.ratingCount > 0);
   }
 }
