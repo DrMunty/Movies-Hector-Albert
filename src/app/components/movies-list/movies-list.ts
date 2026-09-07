@@ -55,13 +55,13 @@ export class Movies implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchGenres();
     this.fetchMovies();
-
-    // Cargamos las películas guardadas del usuario para rellenar los iconos
-    if (this.authService.currentUser()) {
-      this.userMoviesSub = this.dbService.getUserMovies().subscribe(movies => {
+    
+    this.userMoviesSub = this.dbService.getUserMovies().subscribe({
+      next: (movies) => {
         this.savedMovies.set(movies);
+      },
+      error: (err) => console.error('An error ocurred when loading user movies', err)
       });
-    }
 
     this.filterForm.get('query')?.valueChanges.subscribe(text => {
       const controlsToToggle = ['sort_by', 'with_genres', 'vote_average_gte'];
@@ -88,7 +88,6 @@ export class Movies implements OnInit, OnDestroy {
     this.userMoviesSub?.unsubscribe();
   }
 
-  // Funciones para comprobar si la película está en las listas
   isMovieFavorite(id: number): boolean {
     return !!this.savedMovies().find(m => m.id === id && m.isFavorite);
   }
@@ -97,12 +96,10 @@ export class Movies implements OnInit, OnDestroy {
     return !!this.savedMovies().find(m => m.id === id && m.inWatchlist);
   }
 
-  // NUEVO: Comprobar si está votada
   isMovieRated(id: number): boolean {
     return !!this.savedMovies().find(m => m.id === id && m.isRated);
   }
 
-  // NUEVO: Método para actualizar la UI instantáneamente (Actualización optimista)
   updateLocalState(movieId: number, field: 'isFavorite' | 'inWatchlist' | 'isRated') {
     const currentMovies = this.savedMovies();
     const existing = currentMovies.find(m => m.id === movieId);
@@ -162,12 +159,9 @@ export class Movies implements OnInit, OnDestroy {
     }
   }
 
-  // --- LÓGICA DE ACCIONES Y NOTIFICACIONES ---
-
   async addToWatchlist(movie: Movie) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
-    
-    // Feedback visual inmediato
+  
     this.updateLocalState(movie.id, 'inWatchlist');
     
     this.successMessageText.set(`Added to your Watchlist!`);
@@ -179,8 +173,7 @@ export class Movies implements OnInit, OnDestroy {
 
   async addToFavorites(movie: Movie) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
-    
-    // Feedback visual inmediato
+   
     this.updateLocalState(movie.id, 'isFavorite');
     
     this.successMessageText.set(`Added to Favorites!`);

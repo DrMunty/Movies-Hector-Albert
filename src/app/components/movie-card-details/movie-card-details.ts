@@ -70,13 +70,11 @@ export class MovieCardDetails implements OnInit, OnDestroy {
   }
 
   checkIfMovieIsSaved(movieId: number): void {
-    if (this.authService.currentUser()) {
-      this.userMoviesSub = this.dbService.getUserMovies().subscribe(movies => {
-        const savedMovie = movies.find(m => m.id === movieId);
-        this.isFavorited.set(!!savedMovie?.isFavorite);
-        this.isWatchlisted.set(!!savedMovie?.inWatchlist);
-      });
-    }
+    this.userMoviesSub = this.dbService.getUserMovies().subscribe(movies => {
+      const savedMovie = movies.find(m => m.id === movieId);
+      this.isFavorited.set(!!savedMovie?.isFavorite);
+      this.isWatchlisted.set(!!savedMovie?.inWatchlist);
+    });
   }
 
   getImageUrl(path: string | null, size: string = 'w500'): string {
