@@ -2,15 +2,19 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DbService } from '@services/database/database-service';
+import { ApiService } from '@services/api-service/api-service';
+import { forkJoin, map } from 'rxjs';
+import { MovieCard } from '@components/movie-card/movie-card';
 
 @Component({
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MovieCard],
   selector: 'app-user-ranking',
   styleUrl: './user-ranking.css',
   templateUrl: './user-ranking.html',
 })
-export class UserRanking implements OnInit{
+export class UserRanking implements OnInit {
   private dbService = inject(DbService);
+  private apiService = inject(ApiService);
 
   rankings = signal<any[]>([]);
   isLoading = signal<boolean>(true);
@@ -19,12 +23,35 @@ export class UserRanking implements OnInit{
   async ngOnInit() {
     this.isLoading.set(true);
     try {
-      const data = await this.dbService.getGlobalRankings();
-      this.rankings.set(data);
-      this.sortData('favorites');
+      const firestoreData = await this.dbService.getGlobalRankings();
+      const top10 = firestoreData
+        .sort((a, b) => b.favoriteCount - a.favoriteCount || b.averageRating - a.averageRating)
+        .slice(0, 10);
+      if (top10.length > 0) {
+        const requests = top10.map((stat) =>
+          this.apiService.getMovieDetails(stat.id).pipe(
+            map((movieData) => ({
+              ...movieData,
+              rankingStats: stat,
+            })),
+          ),
+        );
+
+        forkJoin(requests).subscribe({
+          next: (fullData) => {
+            this.rankings.set(fullData);
+            this.isLoading.set(false);
+          },
+          error: (err) => {
+            console.error('Error cargando detalles de TMDB:', err);
+            this.isLoading.set(false);
+          },
+        });
+      } else {
+        this.isLoading.set(false);
+      }
     } catch (error) {
       console.error('Error cargando rankings:', error);
-    } finally {
       this.isLoading.set(false);
     }
   }
@@ -41,4 +68,3 @@ export class UserRanking implements OnInit{
     this.rankings.set(sorted);
   }
 }
-

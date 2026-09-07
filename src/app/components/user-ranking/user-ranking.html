@@ -1,24 +1,24 @@
 <main class="min-h-screen bg-black text-white px-4 py-12">
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-black mb-4">Community <span class="text-amber-400">Rankings</span></h1>
-      <p class="text-zinc-400">Find our user's favorite Movies and Tv Shows!</p>
+      <p class="text-zinc-400">Find our user's top rated Tv Shows and Movies.</p>
     </div>
 
-    <div class="flex justify-center gap-4 mb-10">
+    <div class="flex justify-center gap-4 mb-14">
       <button (click)="sortData('favorites')" 
               [ngClass]="sortBy() === 'favorites' ? 'bg-pink-600 border-pink-600' : 'bg-zinc-900 border-zinc-700 hover:bg-zinc-800'"
-              class="px-6 py-2 rounded-full border font-semibold transition-colors flex items-center gap-2">
+              class="px-6 py-2 rounded-full border font-semibold transition-colors flex items-center gap-2 cursor-pointer">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        Más Favoritas
+        Most favorited
       </button>
       
       <button (click)="sortData('rating')" 
               [ngClass]="sortBy() === 'rating' ? 'bg-amber-500 text-black border-amber-500' : 'bg-zinc-900 border-zinc-700 hover:bg-zinc-800'"
-              class="px-6 py-2 rounded-full border font-semibold transition-colors flex items-center gap-2">
+              class="px-6 py-2 rounded-full border font-semibold transition-colors flex items-center gap-2 cursor-pointer">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        Mejor Nota
+        Top rated
       </button>
     </div>
 
@@ -27,32 +27,42 @@
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
       </div>
     } @else {
-      <div class="flex flex-col gap-4">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+        
         @for (item of rankings(); track item.id; let i = $index) {
-          
-          <div class="flex items-center bg-[#1a1a1a] border border-zinc-800 rounded-xl p-4 sm:p-6 hover:border-zinc-600 transition-colors">
+          <div class="relative bg-[#1a1a1a] rounded-xl flex flex-col transform transition-transform hover:-translate-y-2 duration-300">
             
-            <div class="w-12 sm:w-16 shrink-0 text-center">
-              <span class="text-3xl sm:text-4xl font-black" [ngClass]="{'text-amber-400': i === 0, 'text-zinc-300': i === 1, 'text-amber-700': i === 2, 'text-zinc-600': i > 2}">
-                #{{ i + 1 }}
-              </span>
+            <div class="absolute -top-5 -left-3 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl z-20 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+                 [ngClass]="{'bg-amber-400 text-black': i === 0, 'bg-zinc-300 text-black': i === 1, 'bg-amber-700 text-white': i === 2, 'bg-zinc-800 text-zinc-400 border border-zinc-700': i > 2}">
+              #{{ i + 1 }}
             </div>
 
-            <div class="flex-1 px-4 border-l border-zinc-800 ml-2">
-              <h3 class="text-lg sm:text-xl font-bold text-white mb-1">{{ item.title }}</h3>
+            <div class="flex-1 pointer-events-none">
+              <app-movie-card [movie]="item"></app-movie-card>
             </div>
 
-            <div class="flex gap-6 text-sm sm:text-base font-bold shrink-0">
+            <div class="mt-auto bg-zinc-900 border-t border-zinc-800 rounded-b-xl p-4 flex justify-around">
+              
               <div class="flex flex-col items-center">
-                <svg class="w-5 h-5 text-pink-500 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                <span>{{ item.favoriteCount }}</span>
+                <span class="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Community</span>
+                <div class="flex items-center gap-1.5 text-pink-500 font-black text-xl">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  {{ item.rankingStats.favoriteCount }}
+                </div>
               </div>
-              <div class="flex flex-col items-center">
-                <svg class="w-5 h-5 text-amber-400 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <span>{{ item.averageRating > 0 ? (item.averageRating | number:'1.1-1') : '-' }}</span>
-              </div>
-            </div>
 
+              <div class="w-px bg-zinc-800"></div>
+
+              <div class="flex flex-col items-center">
+                <span class="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Average score</span>
+                <div class="flex items-center gap-1.5 text-amber-400 font-black text-xl">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  {{ item.rankingStats.averageRating > 0 ? (item.rankingStats.averageRating | number:'1.1-1') : '-' }}
+                </div>
+              </div>
+
+            </div>
           </div>
         }
       </div>
