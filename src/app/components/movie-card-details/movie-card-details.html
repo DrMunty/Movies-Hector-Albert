@@ -109,9 +109,6 @@
   </main>
 }
 
-<!-- ============================================== -->
-<!-- MODAL DE ESTRELLAS INTERACTIVAS                -->
-<!-- ============================================== -->
 @if (isRatingModalOpen()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     
@@ -119,7 +116,6 @@
     
     <div class="bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative z-10">
       
-      <!-- Gradiente para pintar medias estrellas -->
       <svg width="0" height="0" class="absolute hidden">
         <defs>
           <linearGradient id="halfStarGrad">
@@ -145,16 +141,12 @@
       <div class="flex justify-center gap-1 sm:gap-2 mb-8" (mouseleave)="hoverRating.set(0)">
         @for (rate of ratingOptions; track rate) {
           <div class="relative w-7 h-7 sm:w-10 sm:h-10 cursor-pointer transform transition-transform hover:scale-110">
-            <!-- Zona izquierda (0.5) -->
             <div class="absolute inset-y-0 left-0 w-1/2 z-10" 
                  (mouseenter)="hoverRating.set(rate - 0.5)" 
                  (click)="setRating(rate - 0.5)"></div>
-            <!-- Zona derecha (entero) -->
             <div class="absolute inset-y-0 right-0 w-1/2 z-10" 
                  (mouseenter)="hoverRating.set(rate)" 
                  (click)="setRating(rate)"></div>
-
-            <!-- Estrella SVG dinámica -->
             <svg class="w-full h-full drop-shadow-md transition-colors duration-150" 
                  [attr.fill]="(hoverRating() > 0 ? hoverRating() : selectedRating()) >= rate ? '#fbbf24' : ((hoverRating() > 0 ? hoverRating() : selectedRating()) === rate - 0.5 ? 'url(#halfStarGrad)' : '#3f3f46')" 
                  viewBox="0 0 24 24">

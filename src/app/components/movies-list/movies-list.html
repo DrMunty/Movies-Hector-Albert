@@ -7,7 +7,6 @@
       </h1>
 
       <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <!-- (Tu formulario se mantiene idéntico) -->
         <div class="flex flex-col">
           <label class="text-xs font-semibold text-zinc-400 mb-1">Search by title </label>
           <input type="text" formControlName="query" placeholder="Ex: Inception..."
@@ -57,7 +56,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-10">
       @for (movieItem of moviesList(); track movieItem.id) {
 
-      <!-- AQUÍ ESTÁ LA MAGIA: Pasamos los booleanos isFavorite y isWatchlisted a la tarjeta -->
       <app-movie-card [movie]="movieItem" [isFavorite]="isMovieFavorite(movieItem.id)"
         [isWatchlisted]="isMovieWatchlisted(movieItem.id)" [isRated]="isMovieRated(movieItem.id)"
         (favoriteMovie)="addToFavorites(movieItem)" (rateMovie)="openRatingModal(movieItem)"
