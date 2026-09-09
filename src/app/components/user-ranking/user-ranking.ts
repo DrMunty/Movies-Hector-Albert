@@ -87,6 +87,12 @@ export class UserRanking implements OnInit, OnDestroy {
     this.userMoviesSub?.unsubscribe();
   }
 
+  goToMovieDetails(event: Event, movieId: number) {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return; 
+    this.router.navigate(['/movie', movieId]);
+  }
+
   isMovieFavorite(id: number): boolean { 
     return !!this.savedMovies().find(m => m.id === id && m.isFavorite); 
   }
@@ -99,33 +105,51 @@ export class UserRanking implements OnInit, OnDestroy {
     return !!this.savedMovies().find(m => m.id === id && m.isRated); 
   }
 
-  updateLocalState(movieId: number, field: 'isFavorite' | 'inWatchlist' | 'isRated') {
+  updateLocalState(movieId: number, field: 'isFavorite' | 'inWatchlist' | 'isRated', value: boolean) {
     const currentMovies = this.savedMovies();
     const existing = currentMovies.find(m => m.id === movieId);
     if (existing) {
-      existing[field] = true;
+      existing[field] = value;
       this.savedMovies.set([...currentMovies]);
-    } else {
-      this.savedMovies.set([...currentMovies, { id: movieId, [field]: true } as any]);
+    } else if (value) {
+      this.savedMovies.set([...currentMovies, { id: movieId, [field]: value } as any]);
     }
+  }
+
+  private showToast(message: string) {
+    this.successMessageText.set(message);
+    this.showSuccessMessage.set(true);
+    setTimeout(() => this.showSuccessMessage.set(false), 3000);
   }
 
   async addToWatchlist(movie: any) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
-    this.updateLocalState(movie.id, 'inWatchlist');
-    this.successMessageText.set(`Added to your Watchlist!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
-    await this.dbService.saveMovie(movie, 'watchlist');
+    
+    const isWatchlisted = this.isMovieWatchlisted(movie.id);
+    this.updateLocalState(movie.id, 'inWatchlist', !isWatchlisted);
+
+    if (isWatchlisted) {
+      this.showToast('Removed from Watchlist');
+      await this.dbService.removeMovie(movie.id, 'inWatchlist');
+    } else {
+      this.showToast('Added to your Watchlist!');
+      await this.dbService.saveMovie(movie, 'watchlist');
+    }
   }
 
   async addToFavorites(movie: any) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
-    this.updateLocalState(movie.id, 'isFavorite');
-    this.successMessageText.set(`Added to Favorites!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
-    await this.dbService.saveMovie(movie, 'favorites');
+    
+    const isFav = this.isMovieFavorite(movie.id);
+    this.updateLocalState(movie.id, 'isFavorite', !isFav);
+
+    if (isFav) {
+      this.showToast('Removed from Favorites');
+      await this.dbService.removeMovie(movie.id, 'isFavorite');
+    } else {
+      this.showToast('Added to Favorites!');
+      await this.dbService.saveMovie(movie, 'favorites');
+    }
   }
 
   openRatingModal(movie: any) {
@@ -144,26 +168,22 @@ export class UserRanking implements OnInit, OnDestroy {
     const movieData = this.movieToRate();
     if (!movieData) return;
 
+    const wasAlreadyRated = this.isMovieRated(movieData.id);
+    
     this.selectedRating.set(rate); 
     this.closeRatingModal();
-    this.updateLocalState(movieData.id, 'isRated');
+    this.updateLocalState(movieData.id, 'isRated', true);
 
-    this.successMessageText.set(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    if (wasAlreadyRated) {
+      this.showToast(`Rating updated to ${rate} stars!`);
+    } else {
+      this.showToast(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
+    }
 
     try {
       await this.dbService.saveMovie(movieData, 'rated', rate);
     } catch (error) {
       console.error(error);
     }
-  }
-  goToMovieDetails(event: Event, movieId: number) {
-    const target = event.target as HTMLElement;
-  
-    if (target.closest('button')) {
-      return; 
-    }
-    this.router.navigate(['/movie', movieId]);
   }
 }
