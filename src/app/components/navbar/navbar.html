@@ -53,15 +53,27 @@
     </div>
 
     @if (searchResults().length > 0) {
-    <div
-      class="absolute top-10 left-0 w-full bg-zinc-800 rounded-md shadow-xl z-50 overflow-hidden border border-zinc-700">
+    <div class="absolute top-10 left-0 w-full bg-zinc-800 rounded-md shadow-xl z-50 overflow-hidden border border-zinc-700">
       <div class="flex flex-col text-sm text-zinc-200">
 
         @for (result of searchResults(); track result.id) {
         <a [routerLink]="['/' + result.media_type, result.id]" (click)="closeSearch()"
           class="flex items-center gap-3 px-4 py-2 hover:bg-zinc-700 cursor-pointer border-b border-zinc-700 last:border-0 transition-colors">
-          <span class="text-zinc-400 text-xs uppercase font-bold w-12 text-center shrink-0">
-            {{ result.media_type === 'movie' ? 'MOVIE' : (result.media_type === 'person' ? 'ACTOR' : 'TV') }}
+      
+          <span class="text-zinc-400 text-xs uppercase font-bold w-16 text-center shrink-0">
+            @if (result.media_type === 'movie') {
+              MOVIE
+            } @else if (result.media_type === 'tv') {
+              TV
+            } @else if (result.media_type === 'person') {
+              @if (result.known_for_department === 'Acting') {
+                ACTOR
+              } @else if (result.known_for_department === 'Directing') {
+                DIRECTOR
+              } @else {
+                {{ result.known_for_department }}
+              }
+            }
           </span>
 
           <span class="font-medium text-white truncate">
