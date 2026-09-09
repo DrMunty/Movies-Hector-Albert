@@ -65,12 +65,17 @@ export class DbService {
     );
   }
 
-  async removeMovie(movieId: number): Promise<void> {
+  async removeMovie(movieId: number, field?: string): Promise<void> {
     const user = this.auth.currentUser();
     if (!user) return;
 
     const movieRef = doc(this.firestore, `users/${user.uid}/movies/${movieId}`);
-    await deleteDoc(movieRef);
+    
+    if (field) {
+      await setDoc(movieRef, { [field]: false }, { merge: true });
+    } else {
+      await deleteDoc(movieRef);
+    }
   }
 
   async getGlobalRankings() {
