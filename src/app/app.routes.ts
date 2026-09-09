@@ -7,6 +7,7 @@ import { TvShowDetails } from '@components/tvshow-detail/tvshow-detail';
 import { Login } from '@components/login/login';
 import { FavoriteMovies } from '@components/favorite-movies/favorite-movies';
 import { UserRanking } from '@components/user-ranking/user-ranking';
+import { UserProfile } from '@components/user-profile/user-profile';
 
 export const routes: Routes = [
     { path: '', component: HomePage},
@@ -17,5 +18,6 @@ export const routes: Routes = [
     { path: 'login', component: Login},
     { path: 'user-movies', component: FavoriteMovies},
     { path: 'user-ranking', component: UserRanking},
+    { path: 'profile', component: UserProfile},
     { path: '**', redirectTo: '', pathMatch: 'prefix'}
 ];

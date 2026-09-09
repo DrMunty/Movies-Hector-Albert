@@ -1,1 +1,67 @@
-<p>user-profile works!</p>
+<main class="min-h-screen bg-black text-white px-4 py-12 flex justify-center items-start pt-24">
+  <div class="bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 w-full max-w-lg shadow-2xl relative">
+    
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-black mb-2">Edit <span class="text-amber-400">Profile</span></h1>
+      <p class="text-zinc-400 text-sm">Personalize how others see you in the community.</p>
+    </div>
+
+    <div class="flex justify-center mb-8">
+      <div class="relative">
+        <img [src]="getPreviewImage()" 
+             alt="Avatar Preview" 
+             class="w-32 h-32 rounded-full object-cover border-4 border-zinc-800 shadow-xl bg-zinc-900"
+             (error)="photoURL.set('')" >
+        <div class="absolute bottom-0 right-0 bg-amber-400 text-black p-2 rounded-full shadow-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+        </div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="saveProfile()" class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-bold text-zinc-300 mb-2">Display Name</label>
+        <input type="text" 
+               name="displayName"
+               [ngModel]="displayName()" 
+               (ngModelChange)="displayName.set($event)"
+               placeholder="E.g. Cinéfilo123" 
+               class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
+               required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-zinc-300 mb-2">Avatar URL (Image Link)</label>
+        <input type="url" 
+               name="photoURL"
+               [ngModel]="photoURL()" 
+               (ngModelChange)="photoURL.set($event)"
+               placeholder="https://example.com/my-photo.jpg" 
+               class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors">
+        <p class="text-xs text-zinc-500 mt-2">Paste a direct link to an image (ending in .jpg, .png).</p>
+      </div>
+
+      <button type="submit" 
+              [disabled]="isLoading()"
+              class="w-full bg-amber-400 text-black font-bold text-lg py-3 rounded-lg hover:bg-amber-300 transition-colors mt-4 flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50">
+        @if (isLoading()) {
+          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+
+    </form>
+  </div>
+
+  @if (showSuccess()) {
+    <div class="fixed inset-0 z-9999 flex items-center justify-center p-4 pointer-events-none">
+      <div class="bg-amber-400 text-black px-8 py-4 rounded-full font-bold text-lg shadow-2xl flex items-center gap-3">
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <span>Profile updated successfully!</span>
+      </div>
+    </div>
+  }
+</main>
