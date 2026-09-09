@@ -6,7 +6,7 @@ import { TmdbResponse, GenreResponse } from '@models/tmdb-interface';
 import { environment } from '@env/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MoviesService {
   private http = inject(HttpClient);
@@ -15,8 +15,8 @@ export class MoviesService {
 
   private get headers(): HttpHeaders {
     return new HttpHeaders({
-      'accept': 'application/json',
-      'Authorization': `Bearer ${this.bearerToken}`
+      accept: 'application/json',
+      Authorization: `Bearer ${this.bearerToken}`,
     });
   }
 
@@ -25,24 +25,49 @@ export class MoviesService {
 
     if (params.query && params.query.trim() !== '') {
       httpParams = httpParams.set('query', params.query);
-      return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/search/movie`, { headers: this.headers, params: httpParams });
+      return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/search/movie`, {
+        headers: this.headers,
+        params: httpParams,
+      });
     }
 
     if (params.sortBy || params.primaryReleaseYear || params.voteAverageGte || params.withGenres) {
-      if (params.sortBy) httpParams = httpParams.set('sort_by', params.sortBy);
-      if (params.primaryReleaseYear) httpParams = httpParams.set('primary_release_year', params.primaryReleaseYear);
-      if (params.voteAverageGte) httpParams = httpParams.set('vote_average.gte', params.voteAverageGte);
+      if (params.sortBy) {
+        httpParams = httpParams.set('sort_by', params.sortBy);
+        if (
+          params.sortBy === 'primary_release_date.desc' ||
+          params.sortBy === 'release_date.desc'
+        ) {
+          const today = new Date().toISOString().split('T')[0];
+          httpParams = httpParams.set('primary_release_date.lte', today);
+        }
+        if (params.sortBy === 'vote_average.desc' && !params.voteCountGte) {
+          httpParams = httpParams.set('vote_count.gte', 300);
+        }
+      }
+      if (params.primaryReleaseYear)
+        httpParams = httpParams.set('primary_release_year', params.primaryReleaseYear);
+      if (params.voteAverageGte)
+        httpParams = httpParams.set('vote_average.gte', params.voteAverageGte);
       if (params.withGenres) httpParams = httpParams.set('with_genres', params.withGenres);
       if (params.voteCountGte) httpParams = httpParams.set('vote_count.gte', params.voteCountGte);
 
-      return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/discover/movie`, { headers: this.headers, params: httpParams });
+      return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/discover/movie`, {
+        headers: this.headers,
+        params: httpParams,
+      });
     }
 
-    return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/movie/popular`, { headers: this.headers, params: httpParams });
+    return this.http.get<TmdbResponse<Movie>>(`${this.baseUrl}/movie/popular`, {
+      headers: this.headers,
+      params: httpParams,
+    });
   }
 
   getGenres(): Observable<GenreResponse> {
-    return this.http.get<GenreResponse>(`${this.baseUrl}/genre/movie/list`, { headers: this.headers });
+    return this.http.get<GenreResponse>(`${this.baseUrl}/genre/movie/list`, {
+      headers: this.headers,
+    });
   }
 
   getMoviesByGenre(genreId: number, page: number = 1): Observable<TmdbResponse<Movie>> {
@@ -50,6 +75,9 @@ export class MoviesService {
   }
 
   getMovieDetails(movieId: number): Observable<MovieDetail> {
-   return this.http.get<MovieDetail>(`${this.baseUrl}/movie/${movieId}?append_to_response=credits`, { headers: this.headers });
+    return this.http.get<MovieDetail>(
+      `${this.baseUrl}/movie/${movieId}?append_to_response=credits`,
+      { headers: this.headers },
+    );
   }
 }

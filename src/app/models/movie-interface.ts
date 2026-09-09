@@ -36,7 +36,7 @@ export interface MovieDetail extends Movie {
 export interface MovieQueryParams {
   page?: number;
   query?: string;
-  sortBy?: 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc';
+  sortBy?: 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'release_date.desc';
   primaryReleaseYear?: number;
   voteAverageGte?: number;
   withGenres?: number;
