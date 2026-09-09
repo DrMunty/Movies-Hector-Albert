@@ -20,22 +20,19 @@ export class MovieCardDetails implements OnInit, OnDestroy {
   authService = inject(AuthService);
   private dbService = inject(DbService);
 
-  // Estados principales de la película
   movie = signal<MovieDetail | null>(null);
   isLoading = signal<boolean>(true);
 
-  // Estados visuales de los botones (para saber si ya están guardadas)
   isWatchlisted = signal<boolean>(false);
   isFavorited = signal<boolean>(false);
+  isRated = signal<boolean>(false);
 
-  // Estados del Modal de Estrellas
   isRatingModalOpen = signal<boolean>(false);
   selectedRating = signal<number>(0);
   hoverRating = signal<number>(0);
   movieToRate = signal<MovieDetail | null>(null);
   ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  // Estados de la Notificación (Toast)
   showSuccessMessage = signal<boolean>(false);
   successMessageText = signal<string>('');
 
@@ -74,6 +71,7 @@ export class MovieCardDetails implements OnInit, OnDestroy {
       const savedMovie = movies.find(m => m.id === movieId);
       this.isFavorited.set(!!savedMovie?.isFavorite);
       this.isWatchlisted.set(!!savedMovie?.inWatchlist);
+      this.isRated.set(!!savedMovie?.isRated);
     });
   }
 
@@ -85,34 +83,40 @@ export class MovieCardDetails implements OnInit, OnDestroy {
     return this.movie()?.credits?.crew.find((member: any) => member.job === 'Director');
   }
 
-  // --- LÓGICA DE ACCIONES Y FIREBASE ---
+  private showToast(message: string) {
+    this.successMessageText.set(message);
+    this.showSuccessMessage.set(true);
+    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+  }
 
   async addToWatchlist(movie: MovieDetail) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
     
-    this.isWatchlisted.set(true); 
-    
-    // 1. Mostrar mensaje AL INSTANTE
-    this.successMessageText.set(`Added to your Watchlist!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
-
-    // 2. Guardar en Firebase sin bloquear la pantalla
-    await this.dbService.saveMovie(movie, 'watchlist');
+    const currentState = this.isWatchlisted();
+    this.isWatchlisted.set(!currentState);
+  
+    if (currentState) {
+      this.showToast('Removed from Watchlist');
+      await this.dbService.removeMovie(movie.id, 'inWatchlist');
+    } else {
+      this.showToast('Added to your Watchlist!');
+      await this.dbService.saveMovie(movie, 'watchlist');
+    }
   }
 
   async addToFavorites(movie: MovieDetail) {
     if (!this.authService.currentUser()) { this.router.navigate(['/login']); return; }
     
-    this.isFavorited.set(true); 
-    
-    // 1. Mostrar mensaje AL INSTANTE
-    this.successMessageText.set(`Added to Favorites!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    const currentState = this.isFavorited();
+    this.isFavorited.set(!currentState);
 
-    // 2. Guardar en Firebase sin bloquear
-    await this.dbService.saveMovie(movie, 'favorites');
+    if (currentState) {
+      this.showToast('Removed from Favorites');
+      await this.dbService.removeMovie(movie.id, 'isFavorite');
+    } else {
+      this.showToast('Added to Favorites!');
+      await this.dbService.saveMovie(movie, 'favorites');
+    }
   }
 
   openRatingModal(movie: MovieDetail) {
@@ -130,15 +134,17 @@ export class MovieCardDetails implements OnInit, OnDestroy {
     const movieData = this.movieToRate();
     if (!movieData) return;
 
+    const wasAlreadyRated = this.isRated();
     this.selectedRating.set(rate); 
     this.closeRatingModal(); 
+    this.isRated.set(true);
 
-    // 1. Mostrar mensaje AL INSTANTE nada más hacer clic
-    this.successMessageText.set(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
-    this.showSuccessMessage.set(true);
-    setTimeout(() => this.showSuccessMessage.set(false), 3000);
+    if (wasAlreadyRated) {
+      this.showToast(`Rating updated to ${rate} stars!`);
+    } else {
+      this.showToast(`Thanks for rating "${movieData.title}" with ${rate} stars!`);
+    }
 
-    // 2. Guardar en Firebase de fondo
     try {
       await this.dbService.saveMovie(movieData, 'rated', rate);
     } catch (error) {

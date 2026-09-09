@@ -63,9 +63,9 @@
               {{ isFavorited() ? 'Favorited' : 'Favorite' }}
             </button>
 
-            <button (click)="openRatingModal(movieData)" class="flex items-center gap-2 bg-amber-400 text-black px-6 py-2.5 rounded-md font-bold hover:bg-amber-300 transition-colors shadow-lg cursor-pointer">
+            <button (click)="openRatingModal(movieData)" [ngClass]="isRated() ? 'bg-amber-400 text-black border-amber-400' : 'bg-zinc-800 text-amber-400 border border-zinc-700'" class="flex items-center gap-2 px-6 py-2.5 rounded-md font-bold hover:bg-amber-300 hover:text-black transition-colors shadow-lg cursor-pointer border">
               <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              Rate
+              {{ isRated() ? 'Rated' : 'Rate' }}
             </button>
 
             <button (click)="addToWatchlist(movieData)" [ngClass]="isWatchlisted() ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-800 text-white border-zinc-700'" class="flex items-center gap-2 px-6 py-2.5 rounded-md font-bold hover:bg-zinc-700 transition-colors shadow-lg cursor-pointer border">
