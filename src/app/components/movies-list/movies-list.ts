@@ -30,18 +30,15 @@ export class Movies implements OnInit, OnDestroy {
   isLoading = signal<boolean>(true);
   genres = signal<Genre[]>([]);
 
-  // Películas guardadas por el usuario
   savedMovies = signal<UserMovie[]>([]);
   private userMoviesSub?: Subscription;
 
-  // Estados del Modal de Estrellas
   isRatingModalOpen = signal<boolean>(false);
   selectedRating = signal<number>(0);
   hoverRating = signal<number>(0);
   movieToRate = signal<Movie | null>(null);
   ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  // Estados del Toast (Notificación)
   showSuccessMessage = signal<boolean>(false);
   successMessageText = signal<string>('');
 
