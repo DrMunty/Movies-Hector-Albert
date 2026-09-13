@@ -2,8 +2,7 @@
 <main class="min-h-[calc(100vh-70px)]
  flex items-center justify-center bg-black px-4 py-12">
   <div class="w-full max-w-md bg-[#1a1a1a] p-8 rounded-2xl border border-zinc-800 shadow-2xl">
-    
-    <!-- Encabezado con estilo de la app -->
+
     <div class="text-center mb-8">
       <div class="inline-block bg-[#f5c518] text-black font-black text-xl px-3 py-1 rounded-md mb-3">
         HAMD
@@ -16,7 +15,6 @@
       </p>
     </div>
 
-    <!-- Mensaje de Error -->
     @if (errorMessage()) {
       <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2.5 rounded-lg text-sm mb-6 flex items-center gap-2">
         <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +24,6 @@
       </div>
     }
 
-    <!-- Formulario -->
     <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4">
       
       <div>
@@ -62,13 +59,11 @@
       </button>
     </form>
 
-    <!-- Separador -->
     <div class="relative my-6">
       <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-zinc-800"></div></div>
       <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#1a1a1a] px-2 text-zinc-500">Continue with</span></div>
     </div>
 
-    <!-- Botón de Google -->
     <button 
       (click)="loginGoogle()" 
       type="button"
@@ -83,7 +78,6 @@
       Google
     </button>
 
-    <!-- Cambio entre Login y Registro -->
     <p class="text-center text-xs text-zinc-400 mt-6">
       {{ isRegisterMode() ? 'Already registered?' : 'Don\'t have an account?' }}
       <button 
