@@ -1,7 +1,7 @@
 <nav class="flex items-center justify-between gap-4 bg-zinc-900 px-4 py-2.5 text-white shadow-md">
 
   <div class="flex items-center space-x-3 shrink-0">
-    <a routerLink="/" class="flex items-center space-x-3 cursor-pointer">
+    <a routerLink="/" (click)="closeMobileMenu()" class="flex items-center space-x-3 cursor-pointer">
       <div
         class="flex items-center justify-center bg-amber-400 text-black font-black text-xl md:text-2xl tracking-tighter rounded-md px-2.5 py-0.5 select-none">
         HAMD
@@ -12,11 +12,15 @@
     </a>
   </div>
 
-  <div class="flex cursor-pointer flex-col space-y-1.5 p-2 rounded hover:bg-zinc-800 md:hidden">
-    <div class="h-0.5 w-6 bg-white"></div>
-    <div class="h-0.5 w-6 bg-white"></div>
-    <div class="h-0.5 w-6 bg-white"></div>
-  </div>
+  <button 
+    (click)="toggleMobileMenu()" 
+    type="button"
+    class="flex cursor-pointer flex-col space-y-1.5 p-2 rounded hover:bg-zinc-800 md:hidden focus:outline-none"
+    aria-label="Toggle navigation menu">
+    <div class="h-0.5 w-6 bg-white transition-all"></div>
+    <div class="h-0.5 w-6 bg-white transition-all"></div>
+    <div class="h-0.5 w-6 bg-white transition-all"></div>
+  </button>
 
   <ul class="hidden items-center space-x-6 font-semibold md:flex shrink-0">
     <li>
@@ -142,3 +146,26 @@
 
   </div>
 </nav>
+
+@if (isMobileMenuOpen()) {
+  <div class="md:hidden bg-zinc-900 border-b border-zinc-800 px-4 py-3 space-y-2">
+    <a routerLink="/" [routerLinkActiveOptions]="{exact: true}"
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      (click)="closeMobileMenu()"
+      class="block rounded px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 hover:text-white transition-colors">
+      Home
+    </a>
+    <a routerLink="/Movies" 
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      (click)="closeMobileMenu()"
+      class="block rounded px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 hover:text-white transition-colors">
+      Movies
+    </a>
+    <a routerLink="/user-ranking" 
+      routerLinkActive="bg-zinc-800 text-amber-400 font-bold"
+      (click)="closeMobileMenu()"
+      class="block rounded px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 hover:text-white transition-colors">
+      Rankings
+    </a>
+  </div>
+}

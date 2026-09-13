@@ -22,6 +22,7 @@ export class Navbar implements OnInit, OnDestroy {
   currentUser = this.authService.currentUser;
   searchResults = signal<any[]>([]);
   isProfileMenuOpen = signal<boolean>(false);
+  isMobileMenuOpen = signal<boolean>(false);
 
   ngOnInit(): void {
     this.searchInput.valueChanges
@@ -55,6 +56,14 @@ export class Navbar implements OnInit, OnDestroy {
   toggleProfileMenu(): void {
     this.isProfileMenuOpen.update(val => !val);
   }
+
+toggleMobileMenu(): void {
+  this.isMobileMenuOpen.update(val => !val);
+}
+
+closeMobileMenu(): void {
+  this.isMobileMenuOpen.set(false);
+}
 
   async logout(): Promise<void> {
     this.isProfileMenuOpen.set(false);
