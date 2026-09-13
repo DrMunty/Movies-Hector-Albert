@@ -24,13 +24,11 @@ export class TvShowService {
   getTvShows(params: TvShowQueryParams = {}): Observable<TmdbResponse<TvShow>> {
     let httpParams = new HttpParams().set('page', params.page ?? 1);
 
-    // Case 1: Search by TV Show name
     if (params.query && params.query.trim() !== '') {
       httpParams = httpParams.set('query', params.query);
       return this.http.get<TmdbResponse<TvShow>>(`${this.baseUrl}/search/tv`, { headers: this.headers, params: httpParams });
     }
 
-    // Case 2: Discover / Filter TV Shows
     if (params.sortBy || params.firstAirDateYear || params.voteAverageGte || params.withGenres) {
       if (params.sortBy) httpParams = httpParams.set('sort_by', params.sortBy);
       if (params.firstAirDateYear) httpParams = httpParams.set('first_air_date_year', params.firstAirDateYear);
@@ -41,7 +39,6 @@ export class TvShowService {
       return this.http.get<TmdbResponse<TvShow>>(`${this.baseUrl}/discover/tv`, { headers: this.headers, params: httpParams });
     }
 
-    // Case 3: Default Popular TV Shows
     return this.http.get<TmdbResponse<TvShow>>(`${this.baseUrl}/tv/popular`, { headers: this.headers, params: httpParams });
   }
 
