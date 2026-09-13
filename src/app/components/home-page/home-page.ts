@@ -128,7 +128,6 @@ export class HomePage implements OnInit, OnDestroy {
 
 
 fetchActors(): void {
-    // Lista negra por si aún así queremos ocultar a alguien específico por su ID
     const blacklistedIds = [3183533]; 
 
     forkJoin([
@@ -142,21 +141,16 @@ fetchActors(): void {
         
         const actorsOnly = allPeople
           .filter(person => {
-            // 1. Filtros básicos
             const isActor = person.known_for_department === 'Acting';
             const hasPhoto = !!person.profile_path;
             const isNotAdult = !person.adult;
             const notInBlacklist = !blacklistedIds.includes(person.id);
 
-            // 2. Filtro de nombre agresivo (ignorando mayúsculas por si acaso)
             const nameLower = person.name.toLowerCase();
             const isNotMayuko = !nameLower.includes('mayuko');
 
-            // 3. EL FILTRO ESTRELLA 🌟: ¿Ha participado en películas reales?
-            // Comprobamos si alguna de sus películas conocidas tiene más de 100 votos
             const hasLegitimateWork = person.known_for?.some(media => (media.vote_count || 0) > 100);
 
-            // Solo pasa si cumple TODAS las condiciones
             return isActor && hasPhoto && isNotAdult && notInBlacklist && isNotMayuko && hasLegitimateWork;
           })
           .sort((a, b) => b.popularity - a.popularity)
