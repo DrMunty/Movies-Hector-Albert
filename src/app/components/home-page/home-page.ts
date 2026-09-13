@@ -1,12 +1,12 @@
 import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService} from '@services/api-service/api-service'; 
+import { ApiService } from '@services/api-service/api-service'; 
 import { Genre } from '@models/tmdb-interface';
-import { Movie} from '@models/movie-interface'; 
-import { RouterModule } from '@angular/router';
+import { Movie } from '@models/movie-interface'; 
+import { RouterModule, Router } from '@angular/router';
 import { Person } from '@models/person-interface';
 import { TvShow } from '@models/tvshow-interface';
-import { forkJoin, catchError, of} from 'rxjs';
+import { forkJoin, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -17,9 +17,13 @@ import { forkJoin, catchError, of} from 'rxjs';
 })
 export class HomePage implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
+  private router = inject(Router);
 
   currentSlideIndex = signal<number>(0);
   private autoSlideInterval: any = null;
+
+  private touchStartX: number = 0;
+  private touchEndX: number = 0;
 
   featuredMovies = signal<Movie[]>([]);
   topRatedMovies = signal<Movie[]>([]);
@@ -29,7 +33,6 @@ export class HomePage implements OnInit, OnDestroy {
   popularDirectors = signal<Person[]>([]);
   topRatedTv = signal<TvShow[]>([]);
   popularTv = signal<TvShow[]>([]);
-
 
   ngOnInit(): void {
     this.fetchGenres();
@@ -73,6 +76,33 @@ export class HomePage implements OnInit, OnDestroy {
     this.startAutoSlide();
   }
 
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.handleSwipeGesture();
+  }
+
+  private handleSwipeGesture(): void {
+    const swipeThreshold = 50;
+    const diff = this.touchStartX - this.touchEndX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        this.nextSlide(true);
+      } else {
+        this.prevSlide();
+      }
+    }
+  }
+
+  onSlideClick(event: Event, movieId: number): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return;
+    this.router.navigate(['/movie', movieId]);
+  }
 
   fetchGenres(): void {
     this.apiService.getGenres().subscribe({
@@ -80,9 +110,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-
   fetchMovies(): void {
-
     this.apiService.getMovies().subscribe({
       next: (res) => this.featuredMovies.set(res.results)
     });
@@ -101,11 +129,9 @@ export class HomePage implements OnInit, OnDestroy {
     }).subscribe({
       next: (res) => this.recentMovies.set(res.results)
     });
-
-
   }
 
-   fetchTvShows(): void {
+  fetchTvShows(): void {
     this.apiService.getTvShows().subscribe({
       next: (res) => this.topRatedTv.set(res.results)
     });
@@ -118,16 +144,15 @@ export class HomePage implements OnInit, OnDestroy {
       next: (res) => this.topRatedTv.set(res.results)
     });
 
-     this.apiService.getTvShows({ 
+    this.apiService.getTvShows({ 
       sortBy: 'popularity.desc', 
       firstAirDateYear: 2026
     }).subscribe({
       next: (res) => this.popularTv.set(res.results)
     });
-   }
+  }
 
-
-fetchActors(): void {
+  fetchActors(): void {
     const blacklistedIds = [3183533]; 
 
     forkJoin([
@@ -162,27 +187,26 @@ fetchActors(): void {
     });
   }
 
-fetchDirectors(): void {
-  const topDirectorIds = [525, 488, 138, 227, 5655, 7467, 2710, 578, 21684, 11130];
+  fetchDirectors(): void {
+    const topDirectorIds = [525, 488, 138, 227, 5655, 7467, 2710, 578, 21684, 11130];
 
-  const directorRequests = topDirectorIds.map(id => 
-    this.apiService.getPersonDetails(id).pipe(
-      catchError(err => {
-        console.warn(`No se pudo cargar al director ${id}:`, err.message);
-        return of(null);
-      })
-    )
-  );
+    const directorRequests = topDirectorIds.map(id => 
+      this.apiService.getPersonDetails(id).pipe(
+        catchError(err => {
+          console.warn(`No se pudo cargar al director ${id}:`, err.message);
+          return of(null);
+        })
+      )
+    );
 
-  forkJoin(directorRequests).subscribe({
-    next: (directors) => {
-      const validDirectors = directors.filter(d => d !== null);
-      this.popularDirectors.set(validDirectors);
-    },
-    error: (err) => console.error('Error general en directores', err)
-  });
-}
-
+    forkJoin(directorRequests).subscribe({
+      next: (directors) => {
+        const validDirectors = directors.filter(d => d !== null);
+        this.popularDirectors.set(validDirectors);
+      },
+      error: (err) => console.error('Error general en directores', err)
+    });
+  }
 
   getImageUrl(path: string | null, size: string = 'w500'): string {
     return path ? `https://image.tmdb.org/t/p/${size}${path}` : 'https://via.placeholder.com/500x750?27272a/ffffff?text=No+Image';
@@ -196,5 +220,4 @@ fetchDirectors(): void {
       .slice(0, 2)
       .join(', ');
   }
-
 }
