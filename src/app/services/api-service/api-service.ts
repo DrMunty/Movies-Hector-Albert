@@ -3,13 +3,11 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 
-// Models
 import { TmdbResponse, GenreResponse, MultiSearchResult } from '@models/tmdb-interface';
 import { Movie, MovieQueryParams, MovieDetail } from '@models/movie-interface';
 import { TvShow, TvShowQueryParams, TvShowDetail } from '@models/tvshow-interface';
 import { Person, PersonDetail } from '@models/person-interface';
 
-// Domain Services
 import { MoviesService } from '@services/movies-service/movies-service';
 import { TvShowService } from '@services/tvshow-service/tvshow-service';
 import { PersonService } from '@services/person-service/person-service';
@@ -19,8 +17,7 @@ import { PersonService } from '@services/person-service/person-service';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  
-  // Injected Sub-Services
+
   private moviesService = inject(MoviesService);
   private tvShowService = inject(TvShowService);
   private personService = inject(PersonService);
@@ -35,7 +32,6 @@ export class ApiService {
     });
   }
 
-  // GLOBAL MULTI-SEARCH (Navbar)
   searchMulti(query: string, page: number = 1): Observable<TmdbResponse<MultiSearchResult>> {
     const params = new HttpParams()
       .set('query', query)
@@ -49,7 +45,6 @@ export class ApiService {
     });
   }
 
-  // DELEGATED MOVIE ENDPOINTS
   getMovies(params: MovieQueryParams = {}): Observable<TmdbResponse<Movie>> {
     return this.moviesService.getMovies(params);
   }
@@ -66,7 +61,6 @@ export class ApiService {
     return this.moviesService.getMovieDetails(movieId);
   }
 
-  // DELEGATED TV SHOW ENDPOINTS
   getTvShows(params: TvShowQueryParams = {}): Observable<TmdbResponse<TvShow>> {
     return this.tvShowService.getTvShows(params);
   }
@@ -83,7 +77,6 @@ export class ApiService {
     return this.tvShowService.getTvShowDetails(seriesId);
   }
 
-  // DELEGATED PERSON (ACTORS / DIRECTORS) ENDPOINTS
   getPeople(query?: string, page: number = 1): Observable<TmdbResponse<Person>> {
     return this.personService.getPeople(query, page);
   }
