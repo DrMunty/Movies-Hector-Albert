@@ -22,18 +22,15 @@ export class TvShowDetails implements OnInit, OnDestroy {
   tvShow = signal<any | null>(null); 
   isLoading = signal<boolean>(true);
 
-  // Estados visuales de botones
   isWatchlisted = signal<boolean>(false);
   isFavorited = signal<boolean>(false);
 
-  // Estados del Modal de Estrellas
   isRatingModalOpen = signal<boolean>(false);
   selectedRating = signal<number>(0);
   hoverRating = signal<number>(0);
   showToRate = signal<any | null>(null);
   ratingOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  // Estados del Toast (Notificación)
   showSuccessMessage = signal<boolean>(false);
   successMessageText = signal<string>('');
 
@@ -88,10 +85,7 @@ export class TvShowDetails implements OnInit, OnDestroy {
       : 'Desconocido';
   }
 
-  // --- LÓGICA DE FIREBASE (ADAPTANDO NAME A TITLE) ---
-
   private formatTvShowForDb(show: any) {
-    // Añadimos 'title' para que DbService lo acepte igual que las películas
     return { ...show, title: show.name };
   }
 
