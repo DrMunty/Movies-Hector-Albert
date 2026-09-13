@@ -21,9 +21,6 @@ export class PersonService {
     });
   }
 
-  /**
-   * Fetches popular people or searches by person name
-   */
   getPeople(query?: string, page: number = 1): Observable<TmdbResponse<Person>> {
     let httpParams = new HttpParams().set('page', page);
 
@@ -35,9 +32,6 @@ export class PersonService {
     return this.http.get<TmdbResponse<Person>>(`${this.baseUrl}/person/popular`, { headers: this.headers, params: httpParams });
   }
 
-  /**
-   * Fetches full biographical details for an actor/director by ID
-   */
  getPersonDetails(personId: number): Observable<PersonDetail> {
     return this.http.get<PersonDetail>(`${this.baseUrl}/person/${personId}?append_to_response=combined_credits`, { headers: this.headers });
   }
