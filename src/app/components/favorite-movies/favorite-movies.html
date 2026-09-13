@@ -1,7 +1,6 @@
 <main class="min-h-screen bg-black pt-8 pb-20 px-4 md:px-10">
     <div class="max-w-7xl mx-auto">
 
-        <!-- CABECERA DEL USUARIO -->
         @if (currentUser(); as user) {
         <div class="flex items-center gap-6 mb-12 bg-[#1a1a1a] p-6 rounded-2xl border border-zinc-800 shadow-lg">
 
@@ -19,14 +18,12 @@
         </div>
         }
 
-        <!-- ESTADO DE CARGA -->
         @if (isLoading()) {
             <div class="flex justify-center py-20">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
             </div>
         } @else {
 
-            <!-- 1. SECCIÓN FAVORITAS (ROSA) -->
             <section class="mb-16">
                 <div class="flex items-center mb-6">
                     <div class="w-1 h-6 bg-pink-600 mr-3 rounded"></div>
@@ -39,7 +36,6 @@
                     <div class="relative group">
                         <div [routerLink]="['/movie', movie.id]" class="relative aspect-2/3 rounded-lg overflow-hidden cursor-pointer border border-zinc-800 group-hover:border-pink-500 transition-colors">
                             <img [src]="getImageUrl(movie.poster_path)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <!-- Botón de Borrar -->
                             <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <button (click)="$event.stopPropagation(); removeMovie(movie.id)" class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors" title="Remove Movie">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -58,7 +54,6 @@
                 }
             </section>
 
-            <!-- 2. SECCIÓN VOTADAS (AMARILLO - CON RANKING) -->
             <section class="mb-16">
                 <div class="flex items-center mb-6">
                     <div class="w-1 h-6 bg-amber-400 mr-3 rounded"></div>
@@ -71,7 +66,6 @@
                     <div class="relative group">
                         <div [routerLink]="['/movie', movie.id]" class="relative aspect-2/3 rounded-lg overflow-hidden cursor-pointer border border-zinc-800 group-hover:border-amber-400 transition-colors">
 
-                            <!-- Nota flotante -->
                             <div class="absolute top-2 right-2 bg-black/80 backdrop-blur-sm text-amber-400 font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 text-sm border border-amber-400/30">
                                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
                                 {{ movie.userRating }}/10
