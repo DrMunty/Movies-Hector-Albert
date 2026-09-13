@@ -20,7 +20,6 @@ export class FavoriteMovies implements OnInit {
   allUserMovies = signal<UserMovie[]>([]);
   isLoading = signal<boolean>(true); 
 
-  // 1. Filtrar Favoritas
   favoriteMovies = computed(() => {
     return this.allUserMovies()
       .filter((m: UserMovie) => m.isFavorite)
