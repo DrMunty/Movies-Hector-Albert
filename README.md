@@ -241,7 +241,7 @@ Screenshots used for this README are stored in `docs/readme-assets/`.
 
 Developed by:
 
-- **HÃ©ctor Valverde**
+- **Héctor Valverde**
   - Github: [hectordev4](https://github.com/hectordev4)
   - LinkedIn: [hector-valverde](https://www.linkedin.com/in/hector-valverde/)
 - **Albert Muntal Perez**
