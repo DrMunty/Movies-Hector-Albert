@@ -231,11 +231,19 @@ Screenshots used for this README are stored in `docs/readme-assets/`.
 
 ---
 
+## Deployed at Vercel
+
+[Hector Albert Movies Database](https://movies-hector-albert.vercel.app/)
+
+---
+
 ## License & Credits
 
 Developed by:
 
-- **Héctor**
+- **HÃ©ctor Valverde**
+  - Github: [hectordev4](https://github.com/hectordev4)
+  - LinkedIn: [hector-valverde](https://www.linkedin.com/in/hector-valverde/)
 - **Albert Muntal Perez**
-  - GitHub: [https://github.com/DrMunty](https://github.com/DrMunty)
-  - LinkedIn: [https://www.linkedin.com/in/albert-muntal-perez-a626a0120/](https://www.linkedin.com/in/albert-muntal-perez-a626a0120/)
+  - GitHub: [DrMunty](https://github.com/DrMunty)
+  - LinkedIn: [Albert-Muntal](https://www.linkedin.com/in/albert-muntal-perez-a626a0120/)
